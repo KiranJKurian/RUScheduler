@@ -1,18 +1,14 @@
+<!DOCTYPE html>
+{% autoescape true %}
 <html>
-	<head>
-		<title>RUScheduler</title>
-	</head>
-	<body>
-		<p>Enter Course Title</p>
-        <p>Enter day</p>
-        <p>Enter start time. Format: HOUR:MINUTE</p>
-        <p>Enter end time. Format: HOUR:MINUTE</p>
-            <form action="/cgi-bin/main.py" method="post">
-                Course Title: <input type="text" name="coursetitle"><br>
-                Day: <input type="text" name="day"><br>
-                Start Time: <input type="text" name="startTime" /><br>
-                End Time: <input type="text" name="endTime" />
-            <input type="submit" value="Submit" action="main.py" method="addClassMain" />
-            </form>
-    </body>
+  <body>
+    <form action="/addEvent" method="post">
+        Subject Number: <input type="text" name="subjectNumer"><br>
+        Course Number: <input type="text" name="courseNumber"><br>
+        Section Number: <input type="text" name="sectionNumber" />
+       <input type="submit" value="Submit" action="main.py" method="addClassMain" />
+    </form>
+
+  </body>
 </html>
+{% endautoescape %}

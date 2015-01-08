@@ -31,6 +31,13 @@ import webapp2
 from oauth2client.appengine import OAuth2DecoratorFromClientSecrets
 import json
 
+import urllib
+
+from google.appengine.api import users
+from google.appengine.ext import ndb
+
+import jinja2
+
 from apiclient.discovery import build
 from oauth2client.appengine import oauth2decorator_from_clientsecrets
 from oauth2client.client import AccessTokenRefreshError
@@ -41,6 +48,11 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 from Places import location
 from CourseInfo import courseInfo
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
 
 
 # CLIENT_SECRETS, name of a file containing the OAuth 2.0 information for this
@@ -79,6 +91,8 @@ decorator = OAuth2DecoratorFromClientSecrets(
 
 service = build('calendar', 'v3')
 
+baseURL=""
+
 class MainHandler(webapp2.RequestHandler):
 
     @decorator.oauth_required
@@ -87,15 +101,9 @@ class MainHandler(webapp2.RequestHandler):
         page_token = None
 #example from calendarsList
         newClass=True
-
-        self.response.out.write("""
-                    <p>Enter Info</p>
-                        <form action="/addEvent" method="post">
-                            Subject Number: <input type="text" name="subjectNumer"><br>
-                            Course Number: <input type="text" name="courseNumber"><br>
-                            Section Number: <input type="text" name="sectionNumber" />
-                        <input type="submit" value="Submit" action="main.py" method="addClassMain" />
-                        </form>""")
+        baseURL=self.request.url
+        template = JINJA_ENVIRONMENT.get_template('main.html')
+        self.response.write(template.render())
 class addEvent(webapp2.RequestHandler):
     @decorator.oauth_aware
     def post(self):
@@ -115,15 +123,15 @@ class addEvent(webapp2.RequestHandler):
             for index in range(len(locations)):
                 day="%s"%(days[index]).lower()
                 if day=="monday" or day=="m":
-                    startDate="2015-02-23"
+                    startDate="2015-01-26"
                 elif day=="tuesday" or day=="t":
-                    startDate="2015-02-24"
+                    startDate="2015-01-20"
                 elif day=="wednesday" or day=="w":
-                    startDate="2015-02-25"
+                    startDate="2015-01-21"
                 elif day=="thursday" or day=="th":
-                    startDate="2015-02-26"
+                    startDate="2015-01-22"
                 elif day=="friday" or day=="f":
-                    startDate="2015-02-20"
+                    startDate="2015-01-23"
                 else:
                     self.response.out.write("Couldn't recognize day: %s "%(day))
                 startTime="%s%s"%(startTimes[index],":00")
@@ -163,6 +171,9 @@ class addEvent(webapp2.RequestHandler):
                     self.response.out.write("Error")
         else:
             self.response.out.write("Error, no credentials")
+        self.response.out.write("""<form action=baseURL>
+          <input type="submit" value="Add Another Class">
+        </form>""")
 
 
 application = webapp.WSGIApplication(
