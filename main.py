@@ -176,11 +176,13 @@ class addEvent(webapp2.RequestHandler):
         else:
             self.response.out.write("Error, no credentials")
         if errorCheck:
-          self.response.out.write("<h2>Awesome, you class was added to your schedule! You can view your <a href=https://www.google.com/calendar/>Google Calendar here</a></h2>")
+          self.response.out.write("<h2>Awesome, you class was added to your schedule!</h2>")
         else:
           self.response.out.write("Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info")
         self.response.out.write("""<form action=/>
           <input type="submit" value="Add Another Class">
+        </form><form action=https://www.google.com/calendar/>
+          <input type="submit" value="Go to Calendar">
         </form>""")
 
 
