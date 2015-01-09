@@ -47,15 +47,63 @@
             
             <!-- Form -->
               <section class="box">
-                <h2>Enter Class Info</h2>
-                    <form action="/addEvent" method="post">
-        Subject Number: <input type="text" name="subjectNumer"><br>
-        Course Number: <input type="text" name="courseNumber"><br>
-        Section Number: <input type="text" name="sectionNumber" />
-       <input type="submit" value="Submit" action="main.py" method="addClassMain" />
-    </form>
-              
-                <hr />
+                <form action="/addEvent" method="post">
+                  <div class="row uniform 50%">
+                    <div class="4u 12u(2)">
+                      <center><b>Subject Number</b></center>
+                    </div>
+                    <div class="4u 12u(2)">
+                      <center><b>Course Number</b></center>
+                    </div>
+                    <div class="4u 12u(2)">
+                      <center><b>Section Number</b></center>
+                    </div>
+                  </div>
+                  <div class="row uniform 50%">
+                    <div class="4u 12u(2)">
+                      <input type="text" name="subjectNumer" id="subjectNumer" value="" placeholder="Example: 198 in 01:198:111" />
+                    </div>
+                    <div class="4u 12u(2)">
+                      <input type="text" name="courseNumber" id="courseNumber" value="" placeholder="Example: 111 in 01:198:111" />
+                    </div>
+                    <div class="4u 12u(2)">
+                      <input type="text" name="sectionNumber" id="sectionNumber" value="" placeholder="Section Number" />
+                    </div>
+                  </div>
+
+                  <div class="row uniform 50%">
+                    <div class="12u 12u(2)">
+                      <center><b>Reminders</b></center>
+                    </div>
+                  </div>
+                  <div class="row uniform 50%">
+                    <div class="3u 12u(2)">
+                      <input type="radio" name="reminder" value="reminder-none" id="reminder-none">
+                      <label for="reminder-none">None</label>
+                    </div>
+                    <div class="3u 12u(2)">
+                      <input type="radio" name="reminder" value="reminder-20" id="reminder-20" checked>
+                      <label for="reminder-20">20 minutes</label>
+                    </div>
+                    <div class="3u 12u(2)">
+                      <input type="radio" name="reminder" value="reminder-40" id="reminder-40">
+                      <label for="reminder-40">40 minutes</label>
+                    </div>
+                    <div class="3u 12u(2)">
+                      <input type="radio" name="reminder" value="reminder-60" id="reminder-60">
+                      <label for="reminder-60">1 hour</label>
+                    </div>
+                  </div>
+
+                  <div class="row uniform"><div class="12u 12u(2)"></div></div>
+                  <div class="row uniform">
+                    <div class="12u"><center>
+                      <ul class="actions">
+                        <li><center><input type="submit" value="Add Classes" /></center></li>
+                      </ul></center>
+                    </div>
+                  </div>
+                </form>
 
   </body>
 </html>

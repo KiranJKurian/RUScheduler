@@ -163,11 +163,38 @@ class addEvent(webapp2.RequestHandler):
                       "overrides": [
                       {
                           "method":"popup",
-                          "minutes":20
+                          "minutes": 20
                        }
-                       ]
+                      ]
                   }
                   }
+                  reminder=cgi.escape(self.request.get('reminder'))
+                  if reminder=="reminder-none":
+                    event["reminders"] = {
+                        "useDefault":"false",
+                        "overrides": [
+                        ]
+                    }
+                  elif reminder=='reminder-40':
+                    event["reminders"] = {
+                        "useDefault":"false",
+                        "overrides": [
+                        {
+                          "method":"popup",
+                          "minutes": 40
+                        }
+                        ]
+                    }
+                  elif reminder=='reminder-60':
+                    event["reminders"] = {
+                        "useDefault":"false",
+                        "overrides": [
+                        {
+                          "method":"popup",
+                          "minutes": 60
+                        }
+                        ]
+                    }
                   http = decorator.http()
 
                   recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
@@ -176,14 +203,20 @@ class addEvent(webapp2.RequestHandler):
         else:
             self.response.out.write("Error, no credentials")
         if errorCheck:
-          self.response.out.write("<h2>Awesome, you class was added to your schedule!</h2>")
+          self.response.out.write("<center><h2>Awesome, you class was added to your schedule!</h2></center>")
         else:
-          self.response.out.write("Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info")
-        self.response.out.write("""<form action=/>
-          <input type="submit" value="Add Another Class">
-        </form><form action=https://www.google.com/calendar/>
-          <input type="submit" value="Go to Calendar">
-        </form>""")
+          self.response.out.write("<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info</center>")
+        self.response.out.write("""<div class="row uniform 50%">
+        <div class="6u 12u(3)"><center>
+          <form action=/>
+            <input type="submit" value="Add Another Class">
+          </form></center>
+        </div>
+        <div class="6u 12u(3)"><center>
+          <form action=https://www.google.com/calendar/>
+            <input type="submit" value="Go to Calendar">
+          </form></center>
+        </div></div>""")
 
 
 application = webapp.WSGIApplication(
