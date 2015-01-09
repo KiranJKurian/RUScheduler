@@ -101,77 +101,85 @@ class MainHandler(webapp2.RequestHandler):
         page_token = None
 #example from calendarsList
         newClass=True
-        baseURL=self.request.url
+        # baseURL=self.request.url
         template = JINJA_ENVIRONMENT.get_template('main.html')
         self.response.write(template.render())
 class addEvent(webapp2.RequestHandler):
     @decorator.oauth_aware
     def post(self):
+        template = JINJA_ENVIRONMENT.get_template('addClass.html')
+        self.response.write(template.render())
         if decorator.has_credentials(): 
             # summary=cgi.escape(self.request.get('coursetitle'))
-            subjectNumer=cgi.escape(self.request.get('subjectNumer'))
-            courseNumber=cgi.escape(self.request.get('courseNumber'))
-            sectionNumber=cgi.escape(self.request.get('sectionNumber'))
+            try: 
+              subjectNumer=cgi.escape(self.request.get('subjectNumer'))
+              courseNumber=cgi.escape(self.request.get('courseNumber'))
+              sectionNumber=cgi.escape(self.request.get('sectionNumber'))
 
-            cInfo=courseInfo(subjectNumer,courseNumber,sectionNumber)
-            
-            locations=cInfo[0]
-            startTimes=cInfo[1]
-            endTimes=cInfo[2]
-            days=cInfo[3]
-            summary=cInfo[4]
-            for index in range(len(locations)):
-                day="%s"%(days[index]).lower()
-                if day=="monday" or day=="m":
-                    startDate="2015-01-26"
-                elif day=="tuesday" or day=="t":
-                    startDate="2015-01-20"
-                elif day=="wednesday" or day=="w":
-                    startDate="2015-01-21"
-                elif day=="thursday" or day=="th":
-                    startDate="2015-01-22"
-                elif day=="friday" or day=="f":
-                    startDate="2015-01-23"
-                else:
-                    self.response.out.write("Couldn't recognize day: %s "%(day))
-                startTime="%s%s"%(startTimes[index],":00")
-                endTime="%s%s"%(endTimes[index],":00")
-                location="%s"%(locations[index])
-                try:
-                    event = {
-                    "location": "%s"%(location),
-                     "end": {
-                         "dateTime": "%sT%s"%(startDate,endTime),
-                        "timeZone": "America/New_York"
-                     },
-                     "start": {
-                         "dateTime": "%sT%s"%(startDate,startTime),
-                        "timeZone": "America/New_York"
-                     },
-                     "summary": summary,
-                     "recurrence": [
-                      'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
-                     ],
-                     "reminders": {
-                        "useDefault":"false",
-                        "overrides": [
-                        {
-                            "method":"popup",
-                            "minutes":20
-                         }
-                         ]
-                    }
-                    }
-                    http = decorator.http()
+              cInfo=courseInfo(subjectNumer,courseNumber,sectionNumber)
+              
+              locations=cInfo[0]
+              startTimes=cInfo[1]
+              endTimes=cInfo[2]
+              days=cInfo[3]
+              summary=cInfo[4]
 
-                    recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
+              errorCheck=True
 
-                    self.response.out.write("Event Added!")
-                except:
-                    self.response.out.write("Error")
+              for index in range(len(locations)):
+                  day="%s"%(days[index]).lower()
+                  if day=="monday" or day=="m":
+                      startDate="2015-01-26"
+                  elif day=="tuesday" or day=="t":
+                      startDate="2015-01-20"
+                  elif day=="wednesday" or day=="w":
+                      startDate="2015-01-21"
+                  elif day=="thursday" or day=="th":
+                      startDate="2015-01-22"
+                  elif day=="friday" or day=="f":
+                      startDate="2015-01-23"
+                  else:
+                      self.response.out.write("Couldn't recognize day: %s "%(day))
+                  startTime="%s%s"%(startTimes[index],":00")
+                  endTime="%s%s"%(endTimes[index],":00")
+                  location="%s"%(locations[index])
+                
+                  event = {
+                  "location": "%s"%(location),
+                   "end": {
+                       "dateTime": "%sT%s"%(startDate,endTime),
+                      "timeZone": "America/New_York"
+                   },
+                   "start": {
+                       "dateTime": "%sT%s"%(startDate,startTime),
+                      "timeZone": "America/New_York"
+                   },
+                   "summary": summary,
+                   "recurrence": [
+                    'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
+                   ],
+                   "reminders": {
+                      "useDefault":"false",
+                      "overrides": [
+                      {
+                          "method":"popup",
+                          "minutes":20
+                       }
+                       ]
+                  }
+                  }
+                  http = decorator.http()
+
+                  recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
+            except:
+                errorCheck=False
         else:
             self.response.out.write("Error, no credentials")
-        self.response.out.write("""<form action=baseURL>
+        if errorCheck:
+          self.response.out.write("<h2>Awesome, you class was added to your schedule! You can view your <a href=https://www.google.com/calendar/>Google Calendar here</a></h2>")
+        else:
+          self.response.out.write("Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info")
+        self.response.out.write("""<form action=/>
           <input type="submit" value="Add Another Class">
         </form>""")
 
