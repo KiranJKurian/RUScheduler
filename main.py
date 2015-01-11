@@ -174,7 +174,7 @@ class addEvent(webapp2.RequestHandler):
               errorCheck="WTF"
               print "fail"
             if errorCheck==":)":
-              self.response.out.write("<center><h2>Awesome, you class was added to your schedule!</h2></center>")
+              self.response.out.write("<center><h2>Awesome, your class was added to your schedule!</h2></center>")
             else:
               self.response.out.write("<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info</center>")
             self.response.out.write("""<div class="row uniform 50%">
