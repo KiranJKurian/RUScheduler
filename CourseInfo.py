@@ -11,7 +11,7 @@ def isNum(s):
     except ValueError:
         return False
 
-def courseInfo(subNum,courseNum,sectionNum):
+def courseInfo(subNum,courseNum,sectionNum,campus):
     # subNum=198
     # courseNum="111"
     # sectionNum=1
@@ -22,7 +22,7 @@ def courseInfo(subNum,courseNum,sectionNum):
     days=[]
 
     # courses = soc.get_courses(subNum)
-    url="http://sis.rutgers.edu/soc/courses.json?semester=12015&subject=%s&campus=NB&level=U%%2CG"%(subNum)
+    url="http://sis.rutgers.edu/soc/courses.json?semester=12015&subject=%s&campus=%s&level=U%%2CG"%(subNum,campus)
     result = urlfetch.fetch(url)
     courses = json.loads(result.content)
 
@@ -31,6 +31,7 @@ def courseInfo(subNum,courseNum,sectionNum):
     
     if not courses:
         print "courses is empty"
+        return "empty"
     else:
         courseFalse=True
         sectionFalse=True
@@ -59,8 +60,10 @@ def courseInfo(subNum,courseNum,sectionNum):
 
         if courseFalse:
             print "Cannot find course %s in subject number %s"%(courseNum,subNum)
+            return "course"
         elif sectionFalse:
             print "Cannot find section number %s in %s"%(sectionNum,courseTitle)
+            return "section"
         else:
             # print [locations,startTimes,endTimes,days,courseTitle]
             return [locations,startTimes,endTimes,days,courseTitle]

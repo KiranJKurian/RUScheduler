@@ -16,4 +16,4 @@ def location(building_code):
 				return "Hill Center"
 			else:
 				return places['all'][location]['title']
-
+	return building_code

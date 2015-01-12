@@ -63,11 +63,13 @@ class MainHandler(webapp2.RequestHandler):
         newClass=True
         template = JINJA_ENVIRONMENT.get_template('main.html')
         self.response.write(template.render())
+        print "Just so you know, Kiran Kurian is awesome. Carry on."
 class addEvent(webapp2.RequestHandler):
     @decorator.oauth_aware
     def post(self):
         template = JINJA_ENVIRONMENT.get_template('addClass.html')
         self.response.write(template.render())
+        print "By using this service you acknowledge the creator's swag level is beyond 90001"
         if decorator.has_credentials():
             errorCheck=None
             try:
@@ -86,11 +88,42 @@ class addEvent(webapp2.RequestHandler):
                 subjectNumber.append(self.request.get('subjectNumber4'))
               courseNumber=[self.request.get('courseNumber1'),self.request.get('courseNumber2'),self.request.get('courseNumber3'),self.request.get('courseNumber4'),self.request.get('courseNumber5')]
               sectionNumber=[self.request.get('sectionNumber1'),self.request.get('sectionNumber2'),self.request.get('sectionNumber3'),self.request.get('sectionNumber4'),self.request.get('sectionNumber5')]
+              print "got before campus"
+              campus=self.request.get('campus')
+              print "campus: %s"%campus
               print subjectNumber
               for classIndex in range(len(subjectNumber)):
                 print "...what're you lookin' at?"
-                cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex])
-                
+                cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex],campus)
+                if cInfo=="empty":
+                  self.response.write("<center>Either you entered an invalid subject number or it seems like Rutgers is having some problems with their schedule of classes program, in which case you may need to try again later.")
+                  self.response.out.write("""<div class="row uniform 50%">
+            <div class="6u 12u(3)"><center>
+              <form action=/>
+                <input type="submit" value="Try Again">
+              </form></center>
+            </div></div>""")
+                  return
+                elif cInfo=="course":
+                  self.response.write("You entered one of your course numbers incorrectly")
+                  self.response.out.write("""<div class="row uniform 50%">
+            <div class="6u 12u(3)"><center>
+              <form action=/>
+                <input type="submit" value="Try Again">
+              </form></center>
+            </div></div>""")
+                  return
+                elif cInfo=="section":
+                  self.response.write("You entered one of your section numbers incorrectly")
+                  self.response.out.write("""<div class="row uniform 50%">
+            <div class="6u 12u(3)"><center>
+              <form action=/>
+                <input type="submit" value="Try Again">
+              </form></center>
+            </div></div>""")
+                  return
+                print "got course info</center>"
+                print cInfo
                 locations=cInfo[0]
                 startTimes=cInfo[1]
                 endTimes=cInfo[2]
