@@ -88,13 +88,13 @@ class addEvent(webapp2.RequestHandler):
                 subjectNumber.append(self.request.get('subjectNumber4'))
               courseNumber=[self.request.get('courseNumber1'),self.request.get('courseNumber2'),self.request.get('courseNumber3'),self.request.get('courseNumber4'),self.request.get('courseNumber5')]
               sectionNumber=[self.request.get('sectionNumber1'),self.request.get('sectionNumber2'),self.request.get('sectionNumber3'),self.request.get('sectionNumber4'),self.request.get('sectionNumber5')]
-              print "got before campus"
-              campus=self.request.get('campus')
-              print "campus: %s"%campus
+              print "got before school"
+              school=self.request.get('campus')
+              print "school: %s"%school
               print subjectNumber
               for classIndex in range(len(subjectNumber)):
                 print "...what're you lookin' at?"
-                cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex],campus)
+                cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex],school)
                 if cInfo=="empty":
                   self.response.write("<center>Either you entered an invalid subject number or it seems like Rutgers is having some problems with their schedule of classes program, in which case you may need to try again later.")
                   self.response.out.write("""<div class="row uniform 50%">
@@ -129,6 +129,7 @@ class addEvent(webapp2.RequestHandler):
                 endTimes=cInfo[2]
                 days=cInfo[3]
                 summary=cInfo[4]
+                campus=cInfo[5]
 
                 for index in range(len(locations)):
                     day="%s"%(days[index]).lower()
@@ -147,6 +148,14 @@ class addEvent(webapp2.RequestHandler):
                     startTime="%s%s"%(startTimes[index],":00")
                     endTime="%s%s"%(endTimes[index],":00")
                     location="%s"%(locations[index])
+                    if campus[index]=="BUS":
+                      color="7"
+                    elif campus[index]=="LIV":
+                      color="5"
+                    elif campus[index]=="D/C":
+                      color="10"
+                    else: 
+                      color="11"
                   
                     event = {
                     "location": "%s"%(location),
@@ -162,6 +171,7 @@ class addEvent(webapp2.RequestHandler):
                      "recurrence": [
                       'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
                      ],
+                     "colorId": color,
                      "reminders": {
                         "useDefault":"false",
                         "overrides": [

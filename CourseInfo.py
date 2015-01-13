@@ -11,7 +11,7 @@ def isNum(s):
     except ValueError:
         return False
 
-def courseInfo(subNum,courseNum,sectionNum,campus):
+def courseInfo(subNum,courseNum,sectionNum,school):
     # subNum=198
     # courseNum="111"
     # sectionNum=1
@@ -20,9 +20,10 @@ def courseInfo(subNum,courseNum,sectionNum,campus):
     startTimes=[]
     endTimes=[]
     days=[]
+    campus=[]
 
     # courses = soc.get_courses(subNum)
-    url="http://sis.rutgers.edu/soc/courses.json?semester=12015&subject=%s&campus=%s&level=U%%2CG"%(subNum,campus)
+    url="http://sis.rutgers.edu/soc/courses.json?semester=12015&subject=%s&campus=%s&level=U%%2CG"%(subNum,school)
     result = urlfetch.fetch(url)
     courses = json.loads(result.content)
 
@@ -45,6 +46,7 @@ def courseInfo(subNum,courseNum,sectionNum,campus):
                         for meetingTimes in sections['meetingTimes']:
                             locations.append("%s Room %s, %s"%(location(meetingTimes['buildingCode']),meetingTimes["roomNumber"],meetingTimes['campusName']))
                             days.append("%s"%(meetingTimes['meetingDay']))
+                            campus.append("%s"%(meetingTimes['campusAbbrev']))
                             if meetingTimes["pmCode"]=="P" and meetingTimes['startTime'][:2]!="12":
                                 startTimes.append("%s:%s"%(str((int)(meetingTimes['startTime'][:2])+12),meetingTimes['startTime'][2:]))
                             else:
@@ -66,7 +68,7 @@ def courseInfo(subNum,courseNum,sectionNum,campus):
             return "section"
         else:
             # print [locations,startTimes,endTimes,days,courseTitle]
-            return [locations,startTimes,endTimes,days,courseTitle]
+            return [locations,startTimes,endTimes,days,courseTitle,campus]
             # print "Locations: %s"%(locations)
             # print "Days: %s"%(days)
             # print "Start Times: %s"%(startTimes)
