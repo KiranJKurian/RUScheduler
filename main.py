@@ -105,7 +105,7 @@ class addEvent(webapp2.RequestHandler):
             </div></div>""")
                   return
                 elif cInfo=="course":
-                  self.response.write("You entered one of your course numbers incorrectly")
+                  self.response.write("<center>You either entered an online lecture/recitation or entered one of your course numbers incorrectly</center>")
                   self.response.out.write("""<div class="row uniform 50%">
             <div class="6u 12u(3)"><center>
               <form action=/>
@@ -114,7 +114,7 @@ class addEvent(webapp2.RequestHandler):
             </div></div>""")
                   return
                 elif cInfo=="section":
-                  self.response.write("You entered one of your section numbers incorrectly")
+                  self.response.write("<center>You entered one of your section numbers incorrectly</center>")
                   self.response.out.write("""<div class="row uniform 50%">
             <div class="6u 12u(3)"><center>
               <form action=/>
@@ -219,7 +219,7 @@ class addEvent(webapp2.RequestHandler):
             if errorCheck==":)":
               self.response.out.write("<center><h2>Awesome, you class was added to your schedule!</h2></center>")
             else:
-              self.response.out.write("<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info</center>")
+              self.response.out.write('<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></center>')
             self.response.out.write("""<div class="row uniform 50%">
             <div class="6u 12u(3)"><center>
               <form action=/>
@@ -233,12 +233,156 @@ class addEvent(webapp2.RequestHandler):
             </div></div>""")
         else:
             self.response.out.write("Error, no credentials")
+class addManual(webapp2.RequestHandler):
+
+    @decorator.oauth_required
+    def get(self):
+        test = ""
+        page_token = None
+        newClass=True
+        template = JINJA_ENVIRONMENT.get_template('addManual.html')
+        self.response.write(template.render())
+
+class addManualEvent(webapp2.RequestHandler):
+    @decorator.oauth_aware
+    def post(self):
+        template = JINJA_ENVIRONMENT.get_template('addClass.html')
+        self.response.write(template.render())
+        summary=self.request.get('summary')
+        location=self.request.get('location')
+        if self.request.get('startHour'):
+          startHour=self.request.get('startHour')
+        else:
+          self.response.write("You didn't select a start hour, %s"%('please <a href="/addManual">try again and select one.</a>'))
+          return
+        if self.request.get('startMinute').isnumeric():
+          startMinute=self.request.get('startMinute')
+        else:
+          self.response.write("You didn't input a valid start minute, %s"%('please <a href="/addManual">try again and input one.</a>'))
+          return
+        startTime="%s:%s:00"%(startHour,startMinute)
+        if self.request.get('endHour'):
+          endHour=self.request.get('endHour')
+        else:
+          self.response.write("You didn't select an end hour, %s"%('please <a href="/addManual">try again and select one.</a>'))
+          return
+          
+        if self.request.get('endMinute').isnumeric():
+          endMinute=self.request.get('endMinute')
+        else:
+          self.response.write("You didn't input a valid end minute, %s"%('please <a href="/addManual">try again and input one.</a>'))
+          return
+        endTime="%s:%s:00"%(endHour,endMinute)
+        days=[]
+        errorCheck=True
+        if self.request.get('mon'):
+          days.append("m")
+          errorCheck=False
+        if self.request.get('tues'):
+          days.append("t")
+          errorCheck=False
+        if self.request.get('wed'):
+          days.append("w")
+          errorCheck=False
+        if self.request.get('thur'):
+          days.append("th")
+          errorCheck=False
+        if self.request.get('fri'):
+          days.append("f")
+          errorCheck=False
+        if errorCheck:
+          self.response.write("You didn't select a day, %s"%('please <a href="/addManual">try again and select one.</a>'))
+          return
+        try:
+          for day in days:
+            if day=="m":
+                startDate="2015-01-26"
+            elif day=="t":
+                startDate="2015-01-20"
+            elif day=="w":
+                startDate="2015-01-21"
+            elif day=="th":
+                startDate="2015-01-22"
+            elif day=="f":
+                startDate="2015-01-23"
+
+            event = {
+              "location": "%s"%(location),
+               "end": {
+                   "dateTime": "%sT%s"%(startDate,endTime),
+                  "timeZone": "America/New_York"
+               },
+               "start": {
+                   "dateTime": "%sT%s"%(startDate,startTime),
+                  "timeZone": "America/New_York"
+               },
+               "summary": summary,
+               "recurrence": [
+                'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
+               ],
+               "colorId": 9,
+               "reminders": {
+                  "useDefault":"false",
+                  "overrides": [
+                  {
+                      "method":"popup",
+                      "minutes": 20
+                   }
+                  ]
+                }
+              }
+            reminder=self.request.get('reminder')
+            if reminder=="reminder-none":
+              event["reminders"] = {
+                  "useDefault":"false",
+                  "overrides": [
+                  ]
+              }
+            elif reminder=='reminder-40':
+              event["reminders"] = {
+                  "useDefault":"false",
+                  "overrides": [
+                  {
+                    "method":"popup",
+                    "minutes": 40
+                  }
+                  ]
+              }
+            elif reminder=='reminder-60':
+              event["reminders"] = {
+                  "useDefault":"false",
+                  "overrides": [
+                  {
+                    "method":"popup",
+                    "minutes": 60
+                  }
+                  ]
+              }
+            http = decorator.http()
+
+            recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
+            self.response.out.write("<center><h2>Awesome, added %s to your schedule!</h2></center>"%(summary))
+        except:
+          self.response.out.write('<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped something. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></center>')
+        self.response.out.write("""<div class="row uniform 50%">
+        <div class="6u 12u(3)"><center>
+          <form action=/>
+            <input type="submit" value="Add More Classes">
+          </form></center>
+        </div>
+        <div class="6u 12u(3)"><center>
+          <form action=https://www.google.com/calendar/>
+            <input type="submit" value="Go to Calendar">
+          </form></center>
+        </div></div>""")
 
 
 application = webapp.WSGIApplication(
   [
    ('/', MainHandler),
    ('/addEvent',addEvent),
+   ('/addManual',addManual),
+   ('/addManualEvent',addManualEvent),
    (decorator.callback_path, decorator.callback_handler()),
   ],
   debug=True)
