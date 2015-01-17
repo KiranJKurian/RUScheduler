@@ -52,17 +52,26 @@ decorator = OAuth2DecoratorFromClientSecrets(
 
 service = build('calendar', 'v3')
 
-baseURL=""
 
 class MainHandler(webapp2.RequestHandler):
 
     @decorator.oauth_required
     def get(self):
-        test = ""
         page_token = None
         newClass=True
+        user=users.get_current_user()
+        if user:
+            hello="Hello %s"%user.nickname()
+        else:
+            hello=""
+
+        template_values = {
+            'hello':hello
+        }
+
+
         template = JINJA_ENVIRONMENT.get_template('main.html')
-        self.response.write(template.render())
+        self.response.write(template.render(template_values))
         print "Just so you know, Kiran Kurian is awesome. Carry on."
 class addEvent(webapp2.RequestHandler):
     @decorator.oauth_aware
