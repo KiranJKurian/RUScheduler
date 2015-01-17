@@ -44,17 +44,20 @@ def courseInfo(subNum,courseNum,sectionNum,school):
                     if (sections['number'])==(sectionNum) or (isNum(sections['number']) and isNum(sectionNum) and int(sections['number'])== int(sectionNum)):
                         sectionFalse=False
                         for meetingTimes in sections['meetingTimes']:
-                            locations.append("%s Room %s, %s"%(location(meetingTimes['buildingCode']),meetingTimes["roomNumber"],meetingTimes['campusName']))
-                            days.append("%s"%(meetingTimes['meetingDay']))
-                            campus.append("%s"%(meetingTimes['campusAbbrev']))
-                            if meetingTimes["pmCode"]=="P" and meetingTimes['startTime'][:2]!="12":
-                                startTimes.append("%s:%s"%(str((int)(meetingTimes['startTime'][:2])+12),meetingTimes['startTime'][2:]))
-                            else:
-                                startTimes.append("%s:%s"%(meetingTimes['startTime'][:2],meetingTimes['startTime'][2:]))
-                            if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12":
-                                endTimes.append("%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:]))
-                            else:
-                                endTimes.append("%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:]))
+                            if meetingTimes["meetingModeDesc"]=="ONLINE INSTRUCTION(INTERNET)":
+                                return ["online",courseTitle]
+                            else:    
+                                locations.append("%s Room %s, %s"%(location(meetingTimes['buildingCode']),meetingTimes["roomNumber"],meetingTimes['campusName']))
+                                days.append("%s"%(meetingTimes['meetingDay']))
+                                campus.append("%s"%(meetingTimes['campusAbbrev']))
+                                if meetingTimes["pmCode"]=="P" and meetingTimes['startTime'][:2]!="12":
+                                    startTimes.append("%s:%s"%(str((int)(meetingTimes['startTime'][:2])+12),meetingTimes['startTime'][2:]))
+                                else:
+                                    startTimes.append("%s:%s"%(meetingTimes['startTime'][:2],meetingTimes['startTime'][2:]))
+                                if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12":
+                                    endTimes.append("%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:]))
+                                else:
+                                    endTimes.append("%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:]))
                     # else:
                     #     print "%s!=%s"%(sections['number'],sectionNum)
 

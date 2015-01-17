@@ -96,130 +96,111 @@ class addEvent(webapp2.RequestHandler):
                 print "...what're you lookin' at?"
                 cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex],school)
                 if cInfo=="empty":
-                  self.response.write("<center>Either you entered an invalid subject number or it seems like Rutgers is having some problems with their schedule of classes program, in which case you may need to try again later.")
-                  self.response.out.write("""<div class="row uniform 50%">
-            <div class="6u 12u(3)"><center>
-              <form action=/>
-                <input type="submit" value="Try Again">
-              </form></center>
-            </div></div>""")
-                  return
+                  self.response.write("<center><h3>Either you entered an invalid subject number or it seems like Rutgers is having some problems with their schedule of classes program, in which case you may need to try again later.</h3></center>")
                 elif cInfo=="course":
-                  self.response.write("<center>You either entered an online lecture/recitation or entered one of your course numbers incorrectly</center>")
-                  self.response.out.write("""<div class="row uniform 50%">
-            <div class="6u 12u(3)"><center>
-              <form action=/>
-                <input type="submit" value="Try Again">
-              </form></center>
-            </div></div>""")
-                  return
+                  self.response.write("<center><h3>You entered one of your course numbers incorrectly</h3></center>")
                 elif cInfo=="section":
-                  self.response.write("<center>You entered one of your section numbers incorrectly</center>")
-                  self.response.out.write("""<div class="row uniform 50%">
-            <div class="6u 12u(3)"><center>
-              <form action=/>
-                <input type="submit" value="Try Again">
-              </form></center>
-            </div></div>""")
-                  return
-                print "got course info</center>"
-                print cInfo
-                locations=cInfo[0]
-                startTimes=cInfo[1]
-                endTimes=cInfo[2]
-                days=cInfo[3]
-                summary=cInfo[4]
-                campus=cInfo[5]
+                  self.response.write("<center><h3>You entered one of your section numbers incorrectly</h3></center>")
+                elif cInfo[0]=="online":
+                  self.response.write("<center><h3>%s is an online lecture/recitation. Please enter when you'd %s"%(cInfo[1],'like to <a href="/addManual">schedule it here manually.</a></h3></center>'))
+                else:
+                  print "got course info"
+                  print cInfo
+                  locations=cInfo[0]
+                  startTimes=cInfo[1]
+                  endTimes=cInfo[2]
+                  days=cInfo[3]
+                  summary=cInfo[4]
+                  campus=cInfo[5]
 
-                for index in range(len(locations)):
-                    day="%s"%(days[index]).lower()
-                    if day=="monday" or day=="m":
-                        startDate="2015-01-26"
-                    elif day=="tuesday" or day=="t":
-                        startDate="2015-01-20"
-                    elif day=="wednesday" or day=="w":
-                        startDate="2015-01-21"
-                    elif day=="thursday" or day=="th":
-                        startDate="2015-01-22"
-                    elif day=="friday" or day=="f":
-                        startDate="2015-01-23"
-                    else:
-                        self.response.out.write("Couldn't recognize day: %s "%(day))
-                    startTime="%s%s"%(startTimes[index],":00")
-                    endTime="%s%s"%(endTimes[index],":00")
-                    location="%s"%(locations[index])
-                    if campus[index]=="BUS":
-                      color="7"
-                    elif campus[index]=="LIV":
-                      color="5"
-                    elif campus[index]=="D/C":
-                      color="10"
-                    else: 
-                      color="11"
-                  
-                    event = {
-                    "location": "%s"%(location),
-                     "end": {
-                         "dateTime": "%sT%s"%(startDate,endTime),
-                        "timeZone": "America/New_York"
-                     },
-                     "start": {
-                         "dateTime": "%sT%s"%(startDate,startTime),
-                        "timeZone": "America/New_York"
-                     },
-                     "summary": summary,
-                     "recurrence": [
-                      'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
-                     ],
-                     "colorId": color,
-                     "reminders": {
-                        "useDefault":"false",
-                        "overrides": [
-                        {
-                            "method":"popup",
-                            "minutes": 20
-                         }
-                        ]
-                    }
-                    }
-                    reminder=self.request.get('reminder')
-                    if reminder=="reminder-none":
-                      event["reminders"] = {
-                          "useDefault":"false",
-                          "overrides": [
-                          ]
-                      }
-                    elif reminder=='reminder-40':
-                      event["reminders"] = {
+                  for index in range(len(locations)):
+                      day="%s"%(days[index]).lower()
+                      if day=="monday" or day=="m":
+                          startDate="2015-01-26"
+                      elif day=="tuesday" or day=="t":
+                          startDate="2015-01-20"
+                      elif day=="wednesday" or day=="w":
+                          startDate="2015-01-21"
+                      elif day=="thursday" or day=="th":
+                          startDate="2015-01-22"
+                      elif day=="friday" or day=="f":
+                          startDate="2015-01-23"
+                      else:
+                          self.response.out.write("Couldn't recognize day: %s "%(day))
+                      startTime="%s%s"%(startTimes[index],":00")
+                      endTime="%s%s"%(endTimes[index],":00")
+                      location="%s"%(locations[index])
+                      if campus[index]=="BUS":
+                        color="7"
+                      elif campus[index]=="LIV":
+                        color="5"
+                      elif campus[index]=="D/C":
+                        color="10"
+                      else: 
+                        color="11"
+                    
+                      event = {
+                      "location": "%s"%(location),
+                       "end": {
+                           "dateTime": "%sT%s"%(startDate,endTime),
+                          "timeZone": "America/New_York"
+                       },
+                       "start": {
+                           "dateTime": "%sT%s"%(startDate,startTime),
+                          "timeZone": "America/New_York"
+                       },
+                       "summary": summary,
+                       "recurrence": [
+                        'RRULE:FREQ=WEEKLY;UNTIL=20150505T000000Z',
+                       ],
+                       "colorId": color,
+                       "reminders": {
                           "useDefault":"false",
                           "overrides": [
                           {
-                            "method":"popup",
-                            "minutes": 40
-                          }
+                              "method":"popup",
+                              "minutes": 20
+                           }
                           ]
                       }
-                    elif reminder=='reminder-60':
-                      event["reminders"] = {
-                          "useDefault":"false",
-                          "overrides": [
-                          {
-                            "method":"popup",
-                            "minutes": 60
-                          }
-                          ]
                       }
-                    http = decorator.http()
+                      reminder=self.request.get('reminder')
+                      if reminder=="reminder-none":
+                        event["reminders"] = {
+                            "useDefault":"false",
+                            "overrides": [
+                            ]
+                        }
+                      elif reminder=='reminder-40':
+                        event["reminders"] = {
+                            "useDefault":"false",
+                            "overrides": [
+                            {
+                              "method":"popup",
+                              "minutes": 40
+                            }
+                            ]
+                        }
+                      elif reminder=='reminder-60':
+                        event["reminders"] = {
+                            "useDefault":"false",
+                            "overrides": [
+                            {
+                              "method":"popup",
+                              "minutes": 60
+                            }
+                            ]
+                        }
+                      http = decorator.http()
 
-                    recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
-                    print "sucess"
+                      recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
+                      print "sucess"
+                  self.response.out.write("<center><h3>Awesome, added %s to your calendar!</h3></center>"%(summary))
             except:
               errorCheck="WTF"
               print "fail"
-            if errorCheck==":)":
-              self.response.out.write("<center><h2>Awesome, you class was added to your schedule!</h2></center>")
-            else:
-              self.response.out.write('<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></center>')
+            if not errorCheck==":)":
+              self.response.out.write('<center><h3>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></h3></center>')
             self.response.out.write("""<div class="row uniform 50%">
             <div class="6u 12u(3)"><center>
               <form action=/>
@@ -278,7 +259,7 @@ class addManualEvent(webapp2.RequestHandler):
         if self.request.get('mon'):
           days.append("m")
           errorCheck=False
-        if self.request.get('tues'):
+        if self.request.get('tue'):
           days.append("t")
           errorCheck=False
         if self.request.get('wed'):
@@ -361,7 +342,7 @@ class addManualEvent(webapp2.RequestHandler):
             http = decorator.http()
 
             recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
-            self.response.out.write("<center><h2>Awesome, added %s to your schedule!</h2></center>"%(summary))
+          self.response.out.write("<center><h2>Awesome, added %s to your calendar!</h2></center>"%(summary))
         except:
           self.response.out.write('<center>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped something. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></center>')
         self.response.out.write("""<div class="row uniform 50%">
