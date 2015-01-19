@@ -53,6 +53,24 @@ decorator = OAuth2DecoratorFromClientSecrets(
 service = build('calendar', 'v3')
 
 
+def handle_404(request, response, exception):
+    template = JINJA_ENVIRONMENT.get_template('addClass.html')
+    response.write(template.render())
+    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not suppose to be here</h3></center>")
+    response.write('<center><img src="/images/404.jpg" alt="Really?"></center>')
+
+def handle_405(request, response, exception):
+    template = JINJA_ENVIRONMENT.get_template('addClass.html')
+    response.write(template.render())
+    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not suppose to be able to <b>get</b> here</h3></center>")
+    response.write('<center><img src="/images/404.jpg" alt="Really?"></center>')
+
+def handle_500(request, response, exception):
+    logging.exception(exception)
+    response.write('A server error occurred!')
+    response.set_status(500)
+
+
 class MainHandler(webapp2.RequestHandler):
 
     @decorator.oauth_required
@@ -68,21 +86,20 @@ class MainHandler(webapp2.RequestHandler):
         template_values = {
             'hello':hello
         }
-
-
         template = JINJA_ENVIRONMENT.get_template('main.html')
         self.response.write(template.render(template_values))
-        print "Just so you know, Kiran Kurian is awesome. Carry on."
+        # print "Just so you know, Kiran Kurian is awesome. Carry on."
 class addEvent(webapp2.RequestHandler):
+    
     @decorator.oauth_aware
     def post(self):
         template = JINJA_ENVIRONMENT.get_template('addClass.html')
         self.response.write(template.render())
-        print "By using this service you acknowledge the creator's swag level is beyond 90001"
+        # print "By using this service you acknowledge the creator's swag level is beyond 90001"
         if decorator.has_credentials():
             errorCheck=None
             try:
-              print "start"
+              # print "start"
               errorCheck=":)" 
               subjectNumber=[]
               if self.request.get('subjectNumber1'):
@@ -97,12 +114,12 @@ class addEvent(webapp2.RequestHandler):
                 subjectNumber.append(self.request.get('subjectNumber4'))
               courseNumber=[self.request.get('courseNumber1'),self.request.get('courseNumber2'),self.request.get('courseNumber3'),self.request.get('courseNumber4'),self.request.get('courseNumber5')]
               sectionNumber=[self.request.get('sectionNumber1'),self.request.get('sectionNumber2'),self.request.get('sectionNumber3'),self.request.get('sectionNumber4'),self.request.get('sectionNumber5')]
-              print "got before school"
+              # print "got before school"
               school=self.request.get('campus')
-              print "school: %s"%school
-              print subjectNumber
+              # print "school: %s"%school
+              # print subjectNumber
               for classIndex in range(len(subjectNumber)):
-                print "...what're you lookin' at?"
+                # print "...what're you lookin' at?"
                 cInfo=courseInfo(subjectNumber[classIndex],courseNumber[classIndex],sectionNumber[classIndex],school)
                 if cInfo=="empty":
                   self.response.write("<center><h3>Either you entered an invalid subject number or it seems like Rutgers is having some problems with their schedule of classes program, in which case you may need to try again later.</h3></center>")
@@ -113,8 +130,8 @@ class addEvent(webapp2.RequestHandler):
                 elif cInfo[0]=="online":
                   self.response.write("<center><h3>%s is an online lecture/recitation. Please enter when you'd %s"%(cInfo[1],'like to <a href="/addManual">schedule it here manually.</a></h3></center>'))
                 else:
-                  print "got course info"
-                  print cInfo
+                  # print "got course info"
+                  # print cInfo
                   locations=cInfo[0]
                   startTimes=cInfo[1]
                   endTimes=cInfo[2]
@@ -203,11 +220,11 @@ class addEvent(webapp2.RequestHandler):
                       http = decorator.http()
 
                       recurring_event = service.events().insert(calendarId='primary', body=event).execute(http=http)
-                      print "sucess"
+                      # print "sucess"
                   self.response.out.write("<center><h3>Awesome, added %s to your calendar!</h3></center>"%(summary))
             except:
               errorCheck="WTF"
-              print "fail"
+              # print "fail"
             if not errorCheck==":)":
               self.response.out.write('<center><h3>Oops, ran into an error when trying to add your class to your calendar. Try again, you may have mistyped your class info. If you have an online lecture/recitation please <a href="/addManual">add that class manually here</a></h3></center>')
             self.response.out.write("""<div class="row uniform 50%">
@@ -230,8 +247,16 @@ class addManual(webapp2.RequestHandler):
         test = ""
         page_token = None
         newClass=True
+        user=users.get_current_user()
+        if user:
+            hello="Hello %s"%user.nickname()
+        else:
+            hello=""
+        template_values = {
+            'hello':hello
+        }
         template = JINJA_ENVIRONMENT.get_template('addManual.html')
-        self.response.write(template.render())
+        self.response.write(template.render(template_values))
 
 class addManualEvent(webapp2.RequestHandler):
     @decorator.oauth_aware
@@ -365,7 +390,14 @@ class addManualEvent(webapp2.RequestHandler):
             <input type="submit" value="Go to Calendar">
           </form></center>
         </div></div>""")
-
+class donate(webapp2.RequestHandler):
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('donate.html')
+    self.response.write(template.render())
+class clubawesome(webapp2.RequestHandler):
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('clubawesome.html')
+    self.response.write(template.render())
 
 application = webapp.WSGIApplication(
   [
@@ -373,7 +405,13 @@ application = webapp.WSGIApplication(
    ('/addEvent',addEvent),
    ('/addManual',addManual),
    ('/addManualEvent',addManualEvent),
+   ('/donate',donate),
+   ('/clubawesome',clubawesome),
    (decorator.callback_path, decorator.callback_handler()),
   ],
   debug=True)
 run_wsgi_app(application)
+
+application.error_handlers[404] = handle_404
+application.error_handlers[500] = handle_500
+application.error_handlers[405] = handle_405
