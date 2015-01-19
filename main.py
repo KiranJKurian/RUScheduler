@@ -56,13 +56,13 @@ service = build('calendar', 'v3')
 def handle_404(request, response, exception):
     template = JINJA_ENVIRONMENT.get_template('addClass.html')
     response.write(template.render())
-    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not suppose to be here</h3></center>")
+    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not supposed to be here</h3></center>")
     response.write('<center><img src="/images/404.jpg" alt="Really?"></center>')
 
 def handle_405(request, response, exception):
     template = JINJA_ENVIRONMENT.get_template('addClass.html')
     response.write(template.render())
-    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not suppose to be able to <b>get</b> here</h3></center>")
+    response.write("<center><h3>Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not supposed to be able to <b>get</b> here</h3></center>")
     response.write('<center><img src="/images/404.jpg" alt="Really?"></center>')
 
 def handle_500(request, response, exception):
