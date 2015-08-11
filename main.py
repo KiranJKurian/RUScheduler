@@ -1,26 +1,33 @@
+#!/usr/bin/python 
+
+# oAuth Client Imports
+from oauth2client.appengine import oauth2decorator_from_clientsecrets
+from oauth2client.client import AccessTokenRefreshError
+from oauth2client.appengine import OAuth2DecoratorFromClientSecrets
+
+
+# Google App Engine Libraries
+from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.ext.webapp import template
+from google.appengine.api import memcache
+from google.appengine.ext import webapp
+from google.appengine.api import users
+from google.appengine.ext import ndb
+from apiclient.discovery import build
+
+
+# Python Standard Libraries
+import json
+import urllib
 import logging
 import os
 import pickle
 import cgi
 import webapp2
-from oauth2client.appengine import OAuth2DecoratorFromClientSecrets
-import json
-
-import urllib
-
-from google.appengine.api import users
-from google.appengine.ext import ndb
-
 import jinja2
 
-from apiclient.discovery import build
-from oauth2client.appengine import oauth2decorator_from_clientsecrets
-from oauth2client.client import AccessTokenRefreshError
-from google.appengine.api import memcache
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import run_wsgi_app
 
+# App Defined Modules
 from Places import location
 from CourseInfo import courseInfo
 
