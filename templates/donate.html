@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<!--
+  Alpha by HTML5 UP
+  html5up.net | @n33co
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>RUScheduler</title>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <meta name="description" content="" />
+      <meta name="keywords" content="" />
+      <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.dropotron.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel-layers.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/init.js') }}"></script>
+
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-wide.css') }}" />
+
+    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+  </head>
+  <body>
+
+    <!-- Header -->
+      <header id="header" class="skel-layers-fixed">
+        <h1><a href="/">RUScheduler</a> by Kiran Kurian</h1>
+        <nav id="nav">
+          <ul>
+            <li>{{ hello }}</li>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="https://github.com/GrandmasterK/RUScheduler">Github</a></li>
+          </ul>
+        </nav>
+      </header>
+
+    <!-- Main -->
+      <section id="main" class="container">
+        <header>
+          <h2>RUScheduler</h2>
+          <p>Add your classes to your Google Calendar.</p>
+        </header>
+        <div style="visibility: hidden">By using this service you acknowledge the creator's swag level is beyond 90001</div>
+        <div class="row">
+          <div class="12u"><center>
+            <h3>Be Awesome</h3>
+            <!--<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+              <input type="hidden" name="cmd" value="_s-xclick">
+              <input type="hidden" name="hosted_button_id" value="RAXLBZE2JHKNJ">
+              <input type="submit" value="Donate" />
+              <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+              <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>via Paypal-->
+            </center>
+          </div>
+        </div>
+        <div class="row">
+          <div class="3u"><div style="visibility: hidden">Help contribute towards to maintainance of RUScheduler</div></div>
+          <div class="6u"><center>
+            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RAXLBZE2JHKNJ" class="button fit">Donate via Paypal</a>
+            </center>
+          </div>
+          <div class="3u"></div>
+        </div>
+
+  </body>
+</html>

@@ -1,8 +1,7 @@
 import json
-from Places import location
+import urllib2
 
-# from urllib import urlopen
-from google.appengine.api import urlfetch
+semester=92015
 
 def isNum(s):
     try:
@@ -12,68 +11,69 @@ def isNum(s):
         return False
 
 def courseInfo(subNum,courseNum,sectionNum,school):
-    # subNum=198
-    # courseNum="111"
-    # sectionNum=1
-
-    locations=[]
-    startTimes=[]
-    endTimes=[]
-    days=[]
-    campus=[]
-
-    # courses = soc.get_courses(subNum)
-    url="http://sis.rutgers.edu/soc/courses.json?semester=12015&subject=%s&campus=%s&level=U%%2CG"%(subNum,school)
-    result = urlfetch.fetch(url)
-    courses = json.loads(result.content)
-
-    # jsonurl = urlopen(url)
-    # courses = json.loads(jsonurl.read())
+    from Places import location
+    if not (isNum(subNum) and isNum(courseNum)):
+        print "Subject or Course Number is NaN"
+        return None
+    try:
+        courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))    
+    except:
+        courses=None   
+    # print courses
+    
     
     if not courses:
-        print "courses is empty"
-        return "empty"
-    else:
-        courseFalse=True
-        sectionFalse=True
-        for course in courses:
-            if course["courseNumber"]==courseNum:
-                courseTitle=course['title']
-                courseFalse=False
-                for sections in course['sections']:
-                    if (sections['number'])==(sectionNum) or (isNum(sections['number']) and isNum(sectionNum) and int(sections['number'])== int(sectionNum)):
-                        sectionFalse=False
-                        for meetingTimes in sections['meetingTimes']:
-                            if meetingTimes["meetingModeDesc"]=="ONLINE INSTRUCTION(INTERNET)":
-                                return ["online",courseTitle]
-                            else:    
-                                locations.append("%s Room %s, %s"%(location(meetingTimes['buildingCode']),meetingTimes["roomNumber"],meetingTimes['campusName']))
-                                days.append("%s"%(meetingTimes['meetingDay']))
-                                campus.append("%s"%(meetingTimes['campusAbbrev']))
-                                if meetingTimes["pmCode"]=="P" and meetingTimes['startTime'][:2]!="12":
-                                    startTimes.append("%s:%s"%(str((int)(meetingTimes['startTime'][:2])+12),meetingTimes['startTime'][2:]))
-                                else:
-                                    startTimes.append("%s:%s"%(meetingTimes['startTime'][:2],meetingTimes['startTime'][2:]))
-                                if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12":
-                                    endTimes.append("%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:]))
-                                else:
-                                    endTimes.append("%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:]))
-                    # else:
-                    #     print "%s!=%s"%(sections['number'],sectionNum)
+        print "Couldn't find json"
+        return None
 
+    info= {'title':"", 'meetingDays':[]}
 
+    for course in courses:
+        if int(course['courseNumber'])==int(courseNum):
+            info['title']=course['title']
 
-        if courseFalse:
-            print "Cannot find course %s in subject number %s"%(courseNum,subNum)
-            return "course"
-        elif sectionFalse:
-            print "Cannot find section number %s in %s"%(sectionNum,courseTitle)
-            return "section"
-        else:
-            # print [locations,startTimes,endTimes,days,courseTitle]
-            return [locations,startTimes,endTimes,days,courseTitle,campus]
-            # print "Locations: %s"%(locations)
-            # print "Days: %s"%(days)
-            # print "Start Times: %s"%(startTimes)
-            # print "End Times: %s"%(endTimes)
-# print courseInfo(198,"111",1)
+            # print "Found Course %s"%info['title']
+
+            for section in course['sections']:
+                if (section['number'])==(sectionNum) or (isNum(section['number']) and isNum(sectionNum) and int(section['number'])== int(sectionNum)):
+                    
+                    # print "Found Section %s"%sectionNum
+
+                    for meetingTimes in section['meetingTimes']:
+                        meeting = {'startTime':"", 'endTime': "", 'day':"", 'location':[]}
+
+                        if meetingTimes['startTime']:
+                            if meetingTimes["pmCode"]=="P" and meetingTimes['startTime'][:2]!="12":
+                                meeting['startTime']="%s:%s"%(str((int)(meetingTimes['startTime'][:2])+12),meetingTimes['startTime'][2:])
+                            else:
+                                meeting['startTime']="%s:%s"%(meetingTimes['startTime'][:2],meetingTimes['startTime'][2:])
+                        else:
+                            return None
+                        if meetingTimes['endTime']:
+                            if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12":
+                                meeting['endTime']="%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:])
+                            else:
+                                meeting['endTime']="%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:])
+                        else:
+                            return None
+                        if meetingTimes['meetingDay']:
+                            meeting['day']=meetingTimes['meetingDay']
+                        else:
+                            return None
+                        if not meetingTimes["meetingModeDesc"] or meetingTimes["meetingModeDesc"]=="ONLINE INSTRUCTION(INTERNET)":
+                            meeting['location']="Online"
+                        else:
+                            loc=location(meetingTimes['buildingCode'])
+                            meeting['location']={'building':loc,'room':meetingTimes['roomNumber'],'campus':meetingTimes['campusAbbrev']}
+                        info['meetingDays'].append(meeting)
+                    if info['meetingDays']:
+                        return json.dumps(info)
+
+            return None
+    return None
+'''
+    Returns None in the event that: Semester/Subject/School/Course/Section not found; Invalid/Empty/Non-existant startTime/endTime/meetingDay
+'''
+if __name__ == "__main__":
+    # print location("HLL")
+    print courseInfo("190","206","1","NB")
