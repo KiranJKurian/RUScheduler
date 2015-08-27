@@ -83,7 +83,7 @@ function send() {
     };
 
 $(document).ready(function(){
-
+    $("#newForm").hide();
     init();
     $("#add").click(function(){
         authorize();

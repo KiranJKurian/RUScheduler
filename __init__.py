@@ -1,5 +1,5 @@
 import json
-
+import os
 import flask
 
 from flask import Flask
@@ -101,6 +101,6 @@ def oauth2callback():
 
 if __name__ == '__main__':
   import uuid
-  app.secret_key = str(uuid.uuid4())
+  app.secret_key = os.urandom(32)
   app.debug = True 
   app.run()
