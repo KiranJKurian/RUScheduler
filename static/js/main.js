@@ -55,6 +55,9 @@ function send() {
               success: function (data) {
                 console.log("Worked");
                 $('#title').html('');
+                $("#form").hide();
+                $("#add").hide();
+                $("#newForm").show();
                 for(var summary of data["success"]){
                     $('#title').append('<h3>Added '+summary+'!</h3>');
                 }
@@ -84,6 +87,11 @@ $(document).ready(function(){
     init();
     $("#add").click(function(){
         authorize();
+    });
+    $("#newForm").click(function(){
+      $("#form").show();
+      $("#add").show();
+      $("#newForm").hide();
     });
 });
 
