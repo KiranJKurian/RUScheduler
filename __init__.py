@@ -17,6 +17,12 @@ import webbrowser
 
 app = flask.Flask(__name__)
 
+development=False
+
+if development:
+  CLIENT_SECRETS='client_secrets.json'
+else:
+  CLIENT_SECRETS='/var/www/RUScheduler/client_secrets.json'
 
 @app.route('/')
 def index():
@@ -75,7 +81,7 @@ def magic():
 @app.route('/oauth2callback', methods=["GET"])
 def oauth2callback():
   flow = client.flow_from_clientsecrets(
-      'client_secrets.json',
+      CLIENT_SECRETS,
       scope='https://www.googleapis.com/auth/calendar',
       redirect_uri=flask.url_for('oauth2callback', _external=True))
   if 'code' not in flask.request.args:
