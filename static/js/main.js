@@ -1,31 +1,31 @@
-function send() {
-        
-        $('#title').html('<h3>Authorizing...</h3>');
+function authorize(){
+  $.ajax({
+    type: "GET",
+    contentType: "application/json; charset=utf-8",
+    url: "/authorize",
+    success: function (data) {
+      console.log("Authorizing");
+      $('#title').html('<h3>Authorizing...</h3>');
+      if(data['url']){
+        console.log("Going to url: "+data["url"]);
+        window.open(data["url"]);
+      }
+      else{
+        console.log("Success: "+data['success']+" url: "+data["url"]);
+        send();
+      }
+    },
+    dataType: "json",
+    error: function (xhr, ajaxOptions, thrownError) {
+         $('#title').html('<h3>Ooopps, got an error...</h3>');
+         console.log(xhr.status);
+         console.log(xhr.responseText);
+         console.log(thrownError);
+    }
+  });
+}
 
-        $.ajax({
-              type: "GET",
-              contentType: "application/json; charset=utf-8",
-              url: "/authorize",
-              data: JSON.stringify(datas),
-              success: function (data) {
-                console.log("Authorizing");
-                $('#title').html('');
-                if(data['url']){
-                  console.log("Going to url: "+data["url"]);
-                  window.open(data["url"]);
-                }
-                else{
-                  console.log("Success: "+data['success']+" url: "+data["url"]);
-                }
-              },
-              dataType: "json",
-              error: function (xhr, ajaxOptions, thrownError) {
-                   $('#title').html('<h3>Ooopps, got an error...</h3>');
-                   console.log(xhr.status);
-                   console.log(xhr.responseText);
-                   console.log(thrownError);
-              }
-        });
+function send() {
 
         var datas = {
             classInfo: [],
@@ -82,7 +82,7 @@ $(document).ready(function(){
 
     init();
     $("#add").click(function(){
-        send();
+        authorize();
     });
 });
 
