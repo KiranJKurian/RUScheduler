@@ -24,8 +24,10 @@ if development:
 else:
   CLIENT_SECRETS='/var/www/RUScheduler/client_secrets.json'
 
+
 @app.route('/')
 def index():
+    # flask.session.clear()
     try:
         return render_template('index.html')
     except:
@@ -34,7 +36,7 @@ def index():
 
 @app.route('/loggedIn')
 def loggedIn():
-    return "You are now authorized, go back to your other tab and add your classes!"
+    return "You are now authorized, go back to your other tab and add your classes!<script>localStorage.setItem('%s',true);</script>"%flask.session['name']
 
 @app.route('/donate')
 def donate():
@@ -44,14 +46,18 @@ def donate():
         print "Cannot render template"
         return "Error with rendering template"
 
-@app.route('/authorize', methods=["GET"])
+@app.route('/authorize', methods=["POST"])
 def authorize():
   if 'credentials' not in flask.session:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+    postInfo=flask.request.json
+    flask.session['name']=postInfo['id']
     return flask.redirect(flask.url_for('oauth2callback'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+    postInfo=json.dumps(flask.request.json)
+    flask.session['name']=postInfo['id']
     return flask.redirect(flask.url_for('oauth2callback'))
   else:
     print "Credentials located"
@@ -102,6 +108,5 @@ def oauth2callback():
 if __name__ == '__main__':
   import uuid
   app.secret_key = str(uuid.uuid4())
-  flask.session.clear()
   app.debug = True 
   app.run()

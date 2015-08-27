@@ -1,6 +1,27 @@
+function randomString(length) {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
+var name=randomString(Math.floor(Math.random()*15)+10);
+localStorage.setItem(getName(),false);
+function storage_handler(evt)
+{
+  if(evt.newValue){
+    authorize();
+  }
+}
+
+window.addEventListener('storage', storage_handler, false);
+
+function newName(){
+  name=randomString(Math.floor(Math.random()*15)+10);
+}
+function getName(){
+  return name;
+}
 function authorize(){
+
   $.ajax({
-    type: "GET",
+    type: "POST",
     contentType: "application/json; charset=utf-8",
     url: "/authorize",
     success: function (data) {
@@ -8,6 +29,7 @@ function authorize(){
       $('#title').html('<h3>Authorizing...</h3>');
       if(data['url']){
         console.log("Going to url: "+data["url"]);
+        localStorage.setItem(getName(),false);
         window.open(data["url"]);
       }
       else{
@@ -15,6 +37,7 @@ function authorize(){
         send();
       }
     },
+    data: JSON.stringify({id:name}),
     dataType: "json",
     error: function (xhr, ajaxOptions, thrownError) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');
@@ -60,6 +83,8 @@ function send() {
                 $("#newForm").show();
                 for(var summary of data["success"]){
                     $('#title').append('<h3>Added '+summary+'!</h3>');
+                    $('#form')[0].reset();
+                    newName();
                 }
                 if(data["error"]!="None"){
                     if(data["error"]=="Access Token Error"){
@@ -68,6 +93,7 @@ function send() {
                     }
                     $('#title').append('<h3>Got an error: '+data["error"]+'! Please try again.</h3>');
                     $('#form')[0].reset();
+                    newName();
                 }
               },
               dataType: "json",
