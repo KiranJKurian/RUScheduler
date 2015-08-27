@@ -3,7 +3,7 @@ function send() {
         $('#title').html('<h3>Authorizing...</h3>');
 
         $.ajax({
-              type: "POST",
+              type: "GET",
               contentType: "application/json; charset=utf-8",
               url: "/authorize",
               data: JSON.stringify(datas),
