@@ -1,12 +1,19 @@
 import json
 # import urllib2
 
+development=False
+
+if development:
+  BUILDING='Buildings.json'
+else:
+  BUILDING='/var/www/RUScheduler/RUScheduler/Buildings.json'
+
 def location(code):
 	# url="https://raw.githubusercontent.com/jennpeare/cs_capstone/master/data/buildings.json"
 
 	# places = json.load(urllib2.urlopen(url))
 
-    places = json.load(open('buildings.json'))
+    places = json.load(open(BUILDING))
 
     for item in places:
     	if item["code"] == code:

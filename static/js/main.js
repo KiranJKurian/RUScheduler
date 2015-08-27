@@ -68,12 +68,13 @@ function send() {
                 }
               },
               dataType: "json",
-              error: function (xhr, ajaxOptions, thrownError) {
+              error: function (xhr, ajaxOptions, thrownError, data) {
                    $('#title').html('<h3>Authorizing...</h3>');
                    console.log("Authorizing...");
                    console.log(xhr.status);
                    console.log(xhr.responseText);
                    console.log(thrownError);
+                   console.log(data);
        }
         });
     };

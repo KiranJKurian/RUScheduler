@@ -17,7 +17,7 @@ import webbrowser
 
 app = flask.Flask(__name__)
 
-development=True
+development=False
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
@@ -31,6 +31,10 @@ def index():
     except:
         print "Cannot render template"
         return "Error with rendering template"
+
+@app.route('/loggedIn')
+def loggedIn():
+    return "You are now authorized, go back to your other tab and add your classes!"
 
 @app.route('/donate')
 def donate():
@@ -92,7 +96,7 @@ def oauth2callback():
     auth_code = flask.request.args.get('code')
     credentials = flow.step2_exchange(auth_code)
     flask.session['credentials'] = credentials.to_json()
-    return flask.redirect(flask.url_for('magic'), code=307)
+    return flask.redirect(flask.url_for('loggedIn'))
 
 
 if __name__ == '__main__':
