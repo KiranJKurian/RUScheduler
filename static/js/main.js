@@ -27,7 +27,7 @@ function authorize(){
     url: "/authorize",
     success: function (data) {
       console.log("Authorizing");
-      $('#title').html('<h3>Authorizing...</h3>');
+      $('#title').html('<h3>Authorizing...</h3><h4>P.S. You will need to allow this popup to authorize you.</h4>');
       if(data['url']){
         console.log("Going to url: "+data["url"]);
         localStorage.setItem(getName(),false);
