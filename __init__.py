@@ -44,7 +44,8 @@ def authorize():
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
     return flask.redirect(flask.url_for('oauth2callback'))
   else:
-    return json.dumps({"success":True})
+    print "Credentials located"
+    return json.dumps({"success":True, "url":None})
 
 @app.route('/magic', methods=["POST","GET"])
 def magic():

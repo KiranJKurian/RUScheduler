@@ -10,8 +10,12 @@ function send() {
               success: function (data) {
                 console.log("Authorizing");
                 $('#title').html('');
-                if(!data['success']){
+                if(data['url']){
+                  console.log("Going to url: "+data["url"]);
                   window.open(data["url"]);
+                }
+                else{
+                  console.log("Success: "+data['success']+" url: "+data["url"]);
                 }
               },
               dataType: "json",
