@@ -38,11 +38,11 @@ def donate():
 def authorize():
   if 'credentials' not in flask.session:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    return json.dumps({"success":False})
+    return flask.redirect(flask.url_for('oauth2callback'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    return json.dumps({"success":False})
+    return flask.redirect(flask.url_for('oauth2callback'))
   else:
     return json.dumps({"success":True})
 
@@ -80,7 +80,7 @@ def oauth2callback():
   if 'code' not in flask.request.args:
     auth_uri = flow.step1_get_authorize_url()
     # webbrowser.open_new_tab(auth_uri)
-    return flask.redirect(auth_uri)
+    return json.dumps({"success":True, "url":auth_uri})
   else:
     auth_code = flask.request.args.get('code')
     credentials = flow.step2_exchange(auth_code)

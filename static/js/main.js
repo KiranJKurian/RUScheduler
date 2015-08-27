@@ -1,4 +1,28 @@
 function send() {
+        
+        $('#title').html('<h3>Authorizing...</h3>');
+
+        $.ajax({
+              type: "POST",
+              contentType: "application/json; charset=utf-8",
+              url: "/authorize",
+              data: JSON.stringify(datas),
+              success: function (data) {
+                console.log("Authorizing");
+                $('#title').html('');
+                if(!data['success']){
+                  window.open(data["url"]);
+                }
+              },
+              dataType: "json",
+              error: function (xhr, ajaxOptions, thrownError) {
+                   $('#title').html('<h3>Ooopps, got an error...</h3>');
+                   console.log(xhr.status);
+                   console.log(xhr.responseText);
+                   console.log(thrownError);
+              }
+        });
+
         var datas = {
             classInfo: [],
             school:"",
