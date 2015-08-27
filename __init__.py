@@ -27,7 +27,7 @@ else:
 
 @app.route('/')
 def index():
-    # flask.session.clear()
+    flask.session.clear()
     try:
         return render_template('index.html')
     except:
@@ -36,7 +36,14 @@ def index():
 
 @app.route('/loggedIn')
 def loggedIn():
-    return "You are now authorized, go back to your other tab and add your classes!<script>localStorage.setItem('%s',true);</script>"%flask.session['name']
+    return """You are now authorized, go back to your other tab and add your classes!
+      <script>localStorage.setItem('%s',true);
+      function storage_handler(evt)
+        {
+          window.close();
+        }
+
+        window.addEventListener('storage', storage_handler, false);</script>"""%flask.session['name']
 
 @app.route('/donate')
 def donate():

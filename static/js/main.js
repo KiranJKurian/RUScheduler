@@ -6,6 +6,7 @@ localStorage.setItem(getName(),false);
 function storage_handler(evt)
 {
   if(evt.newValue){
+    localStorage.setItem(evt.key,evt.oldValue);
     authorize();
   }
 }
