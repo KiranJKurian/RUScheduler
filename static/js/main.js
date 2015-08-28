@@ -1,3 +1,5 @@
+development=false
+
 function randomString(length) {
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
@@ -42,8 +44,10 @@ function authorize(){
     dataType: "json",
     error: function (xhr, ajaxOptions, thrownError) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');
-         console.log(xhr.status);
-         console.log(xhr.responseText);
+         if(development){
+           console.log(xhr.status);
+           console.log(xhr.responseText);
+         }
          console.log(thrownError);
     }
   });
@@ -100,13 +104,13 @@ function send() {
                 }
               },
               dataType: "json",
-              error: function (xhr, ajaxOptions, thrownError, data) {
-                   $('#title').html('<h3>Authorizing...</h3>');
-                   console.log("Authorizing...");
-                   console.log(xhr.status);
-                   console.log(xhr.responseText);
+              error: function (xhr, ajaxOptions, thrownError) {
+                   $('#title').html('<h3>Ooopps, got an error...</h3>');
+                   if(development){
+                     console.log(xhr.status);
+                     console.log(xhr.responseText);
+                   }
                    console.log(thrownError);
-                   console.log(data);
        }
         });
     };
