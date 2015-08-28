@@ -28,6 +28,7 @@ else:
 @app.route('/')
 def index():
     # flask.session.clear()
+    # raise Exception('Testing')
     try:
         return render_template('index.html')
     except:
@@ -111,9 +112,18 @@ def oauth2callback():
     flask.session['credentials'] = credentials.to_json()
     return flask.redirect(flask.url_for('loggedIn'))
 
+@app.errorhandler(500)
+def internal_error(error):
+
+    return render_template('error.html',errorMessage="Oops, looks like something went wrong. Email kiran.kurian@rutgers.edu if this persists.")
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('error.html',errorMessage="Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not supposed to be here"),404
+
 
 if __name__ == '__main__':
   import uuid
   app.secret_key = str(uuid.uuid4())
-  app.debug = True 
+  app.debug = development 
   app.run()

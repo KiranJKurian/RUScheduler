@@ -85,6 +85,7 @@ function send() {
                 for(var summary of data["success"]){
                     $('#title').append('<h3>Added '+summary+'!</h3>');
                     $('#form')[0].reset();
+                    localStorage.removeItem(getName());
                     newName();
                 }
                 if(data["error"]!="None"){
@@ -94,6 +95,7 @@ function send() {
                     }
                     $('#title').append('<h3>Got an error: '+data["error"]+'! Please try again.</h3>');
                     $('#form')[0].reset();
+                    localStorage.removeItem(getName());
                     newName();
                 }
               },
