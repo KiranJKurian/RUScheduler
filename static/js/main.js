@@ -42,13 +42,13 @@ function authorize(){
     },
     data: JSON.stringify({id:name}),
     dataType: "json",
-    error: function (xhr, ajaxOptions, thrownError) {
+    error: function (xhr, ajaxOptions) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');
          if(development){
            console.log(xhr.status);
            console.log(xhr.responseText);
          }
-         console.log(thrownError);
+         // console.log(thrownError);
     }
   });
 }
@@ -104,13 +104,13 @@ function send() {
                 }
               },
               dataType: "json",
-              error: function (xhr, ajaxOptions, thrownError) {
+              error: function (xhr, ajaxOptions) {
                    $('#title').html('<h3>Ooopps, got an error...</h3>');
                    if(development){
                      console.log(xhr.status);
                      console.log(xhr.responseText);
                    }
-                   console.log(thrownError);
+                   // console.log(thrownError);
        }
         });
     };
