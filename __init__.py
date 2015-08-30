@@ -35,6 +35,16 @@ def index():
         print "Cannot render template"
         return "Error with rendering template"
 
+@app.route('/faq')
+def faq():
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('faq.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
 @app.route('/loggedIn')
 def loggedIn():
     return """You are now authorized, go back to your other tab and add your classes!

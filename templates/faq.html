@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<!--
+  Alpha by HTML5 UP
+  html5up.net | @n33co
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>RUScheduler</title>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <meta name="description" content="" />
+      <meta name="keywords" content="" />
+      <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style-wide.css') }}" />
+      <script rel ="js" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
+    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+  </head>
+  <body>
+
+    <!-- Header -->
+      <header id="header" class="skel-layers-fixed">
+        <h1><a href="/">RUScheduler</a> by Kiran Kurian</h1>
+        <nav id="nav">
+          <ul>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="https://github.com/GrandmasterK/RUScheduler">Github</a></li>
+          </ul>
+        </nav>
+      </header>
+
+    <!-- Main -->
+      <section id="main" class="container">
+        <header>
+          <h2>RUScheduler</h2>
+          <h3>Fall 2015</h3>
+          <p>Add your classes to your Google Calendar.</p>
+        </header>
+        <div class="row">
+          <div class="12u">
+            <div id="title" style="text-align:center;"></div>
+              <center><h2>FAQs</h2></center>
+              <section class="box">
+                <center><h3><b>What are subject/course/section numbers?</b></h3>
+                  <h4>Go to <a href='https://my.rutgers.edu/'>my.rutgers.edu</a>. Sign in and click on the Academics tab. From there on the top left you should see a table with your classes and in the course number column you should see a number such as 01:<c style='color:green'>198</c>:<c style='color:blue'>111</c>. The second set of numbers,<c style='color:green'>198</c>, is the subject number while the third set, <c style='color:blue'>111</c>, is the course number. You can find the section number in the column right next to that, in the Section column.</h4>
+                  <img src="{{ url_for('static', filename='images/myrutgers.png') }}" width='900px'/>
+                  <h3><b>I click "Add Classes" but nothing happens</b></h3>
+                  <h4>Make sure you have javascript enabled. If you want to check and see if you have javascript enabled click <js id='check'><b>here</b><js>. </h4>
+                  <h4 id='js'><i>This should change if it is enabled</i></h4>
+                  <script>
+                    $(document).ready(function(){
+                      $("#check").click(function(){
+                        $("#js").text("Yup, looks like you have Javascript enabled!");
+                      });
+                    });
+                  </script>
+                  <noscript>
+                   For full functionality of this site it is necessary to enable JavaScript.
+                   Here are the <a href="http://www.enable-javascript.com/" target="_blank">
+                   instructions how to enable JavaScript in your web browser</a>.
+                  </noscript>
+
+                </center>
+              </section>
+
+    
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.dropotron.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel-layers.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/init.js') }}"></script>
+
+
+  </body>
+</html>
