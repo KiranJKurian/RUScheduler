@@ -17,7 +17,7 @@ import webbrowser
 
 app = flask.Flask(__name__)
 
-development=True
+development=False
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
