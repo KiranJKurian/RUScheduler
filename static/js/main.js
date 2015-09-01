@@ -70,7 +70,8 @@ function send() {
             datas['reminders'].push($("#reminder"+i).is(":checked"));
             console.log("Reminder"+i+" checked: "+$("#reminder"+i).is(":checked"));
         }
-        datas['school']=$("#campus").val();
+        datas['school']=$("[name='campus']:checked").val();
+        console.log("School: "+datas['school']);
 
 
         $('#title').html('<h3>Processing...</h3>');

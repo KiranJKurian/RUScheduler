@@ -15,6 +15,13 @@
       <link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css') }}" />
       <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
       <link rel="stylesheet" href="{{ url_for('static', filename='css/style-wide.css') }}" />
+      <script rel ="js" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.dropotron.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel-layers.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/init.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
   </head>
@@ -99,15 +106,15 @@
                   </div>
                   <div class="row uniform 50%">
                     <div class="4u 12u(2)"><center>
-                      <input type="radio" name="campus" value="NB" id="campus" checked>
+                      <input type="radio" name="campus" value="NB" id="campus-NB" checked="checked">
                       <label for="NB">New Brunswick</label>
                     </center></div>
                     <div class="4u 12u(2)"><center>
-                      <input type="radio" name="campus" value="NK" id="campus">
+                      <input type="radio" name="campus" value="NK" id="campus-NK">
                       <label for="NK">Newark</label>
                     </center></div>
                     <div class="4u 12u(2)"><center>
-                      <input type="radio" name="campus" value="CM" id="campus">
+                      <input type="radio" name="campus" value="CM" id="campus-CM">
                       <label for="CM">Camden</label>
                     </center></div>
                   </div>
@@ -131,13 +138,7 @@
                     </div>
                   </div>
 
-    <script rel ="js" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script rel ="js" src="{{ url_for('static', filename='js/jquery.dropotron.min.js') }}"></script>
-    <script rel ="js" src="{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}"></script>
-    <script rel ="js" src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
-    <script rel ="js" src="{{ url_for('static', filename='js/skel-layers.min.js') }}"></script>
-    <script rel ="js" src="{{ url_for('static', filename='js/init.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
 
 
   </body>
