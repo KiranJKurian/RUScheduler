@@ -80,7 +80,7 @@ def main(service, inputJSON):
 	for classInfo in inputDict['classInfo']:
 		subNum=classInfo['subNum']
 		courseNum=classInfo['courseNum']
-		sectionNum=classInfo['sectionNum']	
+		sectionNum=classInfo['sectionNum']
 
 		# try:
 
@@ -123,9 +123,9 @@ def main(service, inputJSON):
 		      color="5"
 		    elif (meetingDay["location"]['campus']).upper()=="D/C":
 		      color="10"
-		    else: 
+		    else:
 		      color="11"
-		  
+
 		    event = {
 		    "location": "%s"%(location),
 		     "end": {
@@ -185,7 +185,7 @@ def main(service, inputJSON):
 		# 		returnDict["error"]="Access Token Error"
 		# 		return json.dumps(returnDict)
 	return json.dumps(returnDict)
-  
+
 
 
 if __name__ == '__main__':
