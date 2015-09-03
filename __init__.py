@@ -27,7 +27,7 @@ else:
 
 @app.route('/')
 def index():
-    # flask.session.clear()
+    flask.session.clear()
     # raise Exception('Testing')
     try:
         return render_template('index.html')
@@ -130,7 +130,6 @@ def internal_error(error):
 @app.errorhandler(404)
 def not_found(error):
     return render_template('error.html',errorMessage="Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not supposed to be here"),404
-
 
 if __name__ == '__main__':
   import uuid
