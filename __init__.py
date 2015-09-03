@@ -27,7 +27,7 @@ else:
 
 @app.route('/')
 def index():
-    flask.session.clear()
+    # flask.session.clear()
     # raise Exception('Testing')
     try:
         return render_template('index.html')
