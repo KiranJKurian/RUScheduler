@@ -3,25 +3,18 @@ import urllib2
 
 semester=92015
 
-def isNum(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
 def courseInfo(subNum,courseNum,sectionNum,school):
     from Places import location
-    if not (isNum(subNum) and isNum(courseNum)):
+    if not (subNum.isdigit() and courseNum.isdigit()):
         print "Subject or Course Number is NaN"
         return None
     try:
-        courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))    
+        courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))
     except:
-        courses=None   
+        courses=None
     # print courses
-    
-    
+
+
     if not courses:
         print "Couldn't find json"
         return None
@@ -35,8 +28,8 @@ def courseInfo(subNum,courseNum,sectionNum,school):
             # print "Found Course %s"%info['title']
 
             for section in course['sections']:
-                if (section['number'])==(sectionNum) or (isNum(section['number']) and isNum(sectionNum) and int(section['number'])== int(sectionNum)):
-                    
+                if (section['number'])==(sectionNum) or (section['number'].isdigit() and sectionNum.isdigit() and int(section['number'])== int(sectionNum)):
+
                     # print "Found Section %s"%sectionNum
 
                     for meetingTimes in section['meetingTimes']:
