@@ -1,80 +1,29 @@
-# import httplib2
-# import os
-
-# from httplib2 import Http
-
-# from apiclient import discovery
-# from apiclient.discovery import build
-# import oauth2client
-# from oauth2client import client
-# from oauth2client import tools
-
-# import datetime
-# import json
 import json
 
 import flask
 import httplib2
 
 from apiclient import discovery
-from oauth2client import client
 
 from CourseInfo import courseInfo
 
-# try:
-#     import argparse
-#     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-# except ImportError:
-#     flags = None
+from dateutil.parser import *
+import datetime
 
-SCOPES = 'https://www.googleapis.com/auth/calendar'
-CLIENT_SECRET_FILE = 'client_secrets.json'
-APPLICATION_NAME = 'RUScheduler'
+def classes(http_auth, inputJSON):
+	service = discovery.build('calendar', 'v3', http_auth)
+	SERVICE = discovery.build('plus', 'v1', http_auth)
 
-# def get_credentials():
-#     """Gets valid user credentials from storage.
+	people_resource = SERVICE.people()
+	people_document = people_resource.get(userId='me').execute()
 
-#     If nothing has been stored, or if the stored credentials are invalid,
-#     the OAuth2 flow is completed to obtain the new credentials.
-
-#     Returns:
-#         Credentials, the obtained credential.
-#     """
-#     home_dir = os.path.expanduser('~')
-#     credential_dir = os.path.join(home_dir, '.credential')
-#     if not os.path.exists(credential_dir):
-#         os.makedirs(credential_dir)
-#     credential_path = os.path.join(credential_dir,
-#                                    'RUScheduler.json')
-
-#     store = oauth2client.file.Storage(credential_path)
-#     credentials = store.get()
-#     prompted=False
-#     if credentials is None or credentials.invalid:
-#         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-#         flow.user_agent = APPLICATION_NAME
-#         prompted=True
-#         if flags:
-#             credentials = tools.run_flow(flow, store, flags)
-#         else:
-#             credentials = tools.run(flow, store)
-#         print 'Storing credentials to ' + credential_path
-#     return [credentials,prompted]
-# def get_credentials():
-# 	if 'credentials' not in flask.session:
-# 		return flask.redirect(flask.url_for('oauth2callback'))
-# 	credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
-# 	if credentials.access_token_expired:
-# 		return flask.redirect(flask.url_for('oauth2callback'))
-# 	else:
-# 		http_auth = credentials.authorize(httplib2.Http())
-# 		drive_service = discovery.build('drive', 'v2', http_auth)
-# 		files = drive_service.files().list().execute()
-# 		return json.dumps(files)
-
-def main(service, inputJSON):
-	inputDict=json.loads(inputJSON)
 	returnDict={"success":[],"error":"None"}
+
+	returnDict["name"]=	people_document['displayName']
+	returnDict["email"]=	people_document['emails'][0]['value']
+
+	inputDict=json.loads(inputJSON)
+	
 	school=inputDict['school']
 	reminders=inputDict['reminders']
 	for classInfo in inputDict['classInfo']:
@@ -185,10 +134,92 @@ def main(service, inputJSON):
 		# 		returnDict["error"]="Access Token Error"
 		# 		return json.dumps(returnDict)
 	return json.dumps(returnDict)
+
+def getCalendars(http_auth):
+	try:
+		service = discovery.build('calendar', 'v3', http_auth)
+		calendar_list = service.calendarList().list().execute()
+		calendars={"items":[]}
+	  	for calendar_list_entry in calendar_list['items']:
+			info={"summary":calendar_list_entry['summary'],"id":calendar_list_entry['id']}
+			calendars['items'].append(info)
+		# print calendars
+	except Exception,e:
+		return json.dumps({'error':str(e)})
+	return json.dumps(calendars)
+
+def getCalID(summary, service):
+	calendar_list = service.calendarList().list().execute()
+	for calendar_list_entry in calendar_list['items']:
+		if calendar_list_entry['summary']==summary:
+			return calendar_list_entry['id']
+	return None
+
+
+def pledge(http_auth,calDic):
+	service = discovery.build('calendar', 'v3', http_auth)
+	SERVICE = discovery.build('plus', 'v1', http_auth)
+
+	# print "Calendars:\n%s"%calDic
+
+	people_resource = SERVICE.people()
+	people_document = people_resource.get(userId='me').execute()
+
+	returnDict={"error":"None"}
+
+	returnDict["name"]=	people_document['displayName']
+	returnDict["email"]=	people_document['emails'][0]['value']
+	
+	now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+	
+	calEvents=[]
+
+	calID=getCalID('Rho Eta',service)
+	if calID==None:
+		returnDict={"error":"Insufficient Permissions"}
+		return json.dumps(returnDict)
+
+	for cal in calDic['ids']:
+		eventsResult = service.events().list(
+	        calendarId=cal, timeMin=now, timeMax=parse("2015-11-21").isoformat()+'Z', singleEvents=True,
+	        orderBy='startTime').execute()
+		events = eventsResult.get('items', [])
+
+		if not events:
+			print('No upcoming events found.')
+		for event in events:
+			start = event['start'].get('dateTime', event['start'].get('date'))
+
+			end = event['end'].get('dateTime', event['end'].get('date'))
+			item={"start":start, "summary": event['summary'], "end": end}
+			calEvents.append(item)
+			calEvent = {
+			  'summary': '%s- %s'%(people_document['displayName'],item["summary"]),
+			  'start': {
+			    # 'dateTime': item['start'],
+			  },
+			  'end': {
+			    # 'dateTime': item['end'],
+			  },
+			}
+			if event['start'].has_key('dateTime'):
+				calEvent['start']['dateTime']=item['start']
+				calEvent['end']['dateTime']=item['end']
+				# print 'dateTime'
+			else:
+				calEvent['start']['date']=item['start']
+				calEvent['end']['date']=item['end']
+				# print 'date'
+			# print calEvent
+			service.events().insert(calendarId=calID, body=calEvent).execute()
+	# print json.dumps(calEvents)
+	# except Exception,e:
+	# 	returnDict['error']=str(e)
+	return json.dumps(returnDict)
   
 
 
-if __name__ == '__main__':
-    inputDict={"classInfo":[{"subNum":"190","courseNum":"206","sectionNum":"1"}],"school":"NB","reminders":[True,True,True,False]}
-    inputJSON=json.dumps(inputDict)
-    print(main(inputJSON))
+# if __name__ == '__main__':
+#     inputDict={"classInfo":[{"subNum":"190","courseNum":"206","sectionNum":"1"}],"school":"NB","reminders":[True,True,True,False]}
+#     inputJSON=json.dumps(inputDict)
+#     print(main(inputJSON))

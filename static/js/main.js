@@ -7,8 +7,9 @@ var name=randomString(Math.floor(Math.random()*15)+10);
 localStorage.setItem(getName(),false);
 function storage_handler(evt)
 {
-  if(evt.newValue){
-    localStorage.setItem(evt.key,evt.oldValue);
+  if(evt.key==getName()&&evt.newValue!=evt.oldValue){
+    localStorage.removeItem(evt.key);
+    newName();
     authorize();
   }
 }
@@ -90,8 +91,8 @@ function send() {
                 for(var summary of data["success"]){
                     $('#title').append('<h3>Added '+summary+'!</h3>');
                     $('#form')[0].reset();
-                    localStorage.removeItem(getName());
-                    newName();
+                    // localStorage.removeItem(getName());
+                    // newName();
                 }
                 if(data["error"]!="None"){
                     if(data["error"]=="Access Token Error"){
@@ -100,8 +101,8 @@ function send() {
                     }
                     $('#title').append('<h3>Got an error: '+data["error"]+'! Please try again.</h3>');
                     $('#form')[0].reset();
-                    localStorage.removeItem(getName());
-                    newName();
+                    // localStorage.removeItem(getName());
+                    // newName();
                 }
               },
               dataType: "json",
