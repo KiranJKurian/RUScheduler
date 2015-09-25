@@ -1,4 +1,4 @@
-development=false
+development=true
 
 function randomString(length) {
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
@@ -7,7 +7,12 @@ var name=randomString(Math.floor(Math.random()*15)+10);
 localStorage.setItem(getName(),false);
 function storage_handler(evt)
 {
-  if(evt.key==getName()&&localStorage.getItem(getName())==true){
+  console.log("fired!");
+  if(localStorage.getItem(name)=="true"){
+    // if(development){
+      console.log(getName());
+    // }
+    localStorage.setItem(getName(),false);
     localStorage.removeItem(evt.key);
     newName();
     authorize();
