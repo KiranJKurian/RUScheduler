@@ -106,7 +106,7 @@ function authorize(method){
         }
       }
     },
-    data: JSON.stringify({id:name}),
+    data: JSON.stringify({"id":name}),
     dataType: "json",
     error: function (xhr, ajaxOptions) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');
