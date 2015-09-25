@@ -7,7 +7,7 @@ var name=randomString(Math.floor(Math.random()*15)+10);
 localStorage.setItem(getName(),false);
 function storage_handler(evt)
 {
-  if(evt.key==getName()&&evt.newValue!=evt.oldValue&&localStorage.getItem(getName())==true){
+  if(evt.key==getName()&&localStorage.getItem(getName())==true){
     localStorage.removeItem(evt.key);
     newName();
     authorize();
