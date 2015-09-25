@@ -7,7 +7,7 @@ var name=randomString(Math.floor(Math.random()*15)+10);
 localStorage.setItem(getName(),false);
 function storage_handler(evt)
 {
-  if(evt.key==getName()&&evt.newValue!=evt.oldValue){
+  if(evt.key==getName()&&evt.newValue!=evt.oldValue&&localStorage.getItem(getName())==true){
     localStorage.removeItem(evt.key);
     newName();
     authorize();
@@ -23,7 +23,8 @@ function getName(){
   return name;
 }
 function authorize(){
-
+  var datas=JSON.stringify({'id':name});
+  console.log(datas);
   $.ajax({
     type: "POST",
     contentType: "application/json; charset=utf-8",
@@ -41,7 +42,7 @@ function authorize(){
         send();
       }
     },
-    data: JSON.stringify({id:name}),
+    data: datas,
     dataType: "json",
     error: function (xhr, ajaxOptions) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');

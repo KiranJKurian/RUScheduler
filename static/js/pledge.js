@@ -80,7 +80,8 @@ function getCalendars(){
 }
 
 function authorize(method){
-
+  var datas=JSON.stringify({'id':name});
+  console.log(datas);
   $.ajax({
     type: "POST",
     contentType: "application/json; charset=utf-8",
@@ -106,7 +107,7 @@ function authorize(method){
         }
       }
     },
-    data: JSON.stringify({id:name}),
+    data: datas,
     dataType: "json",
     error: function (xhr, ajaxOptions) {
          $('#title').html('<h3>Ooopps, got an error...</h3>');

@@ -16,7 +16,7 @@ import main
 
 app = flask.Flask(__name__)
 
-development=False
+development=True
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
@@ -75,23 +75,28 @@ def donate():
 
 @app.route('/authorize', methods=["POST"])
 def authorize():
-  if 'credentials' not in flask.session:
-    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    postInfo=json.dumps(flask.request.json)
-    print postInfo
-    flask.session['name']=postInfo['id']
-    return flask.redirect(flask.url_for('oauth2callback'))
-  credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
-  if credentials.access_token_expired:
-    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    postInfo=json.dumps(flask.request.json)
-    print postInfo
-    print postInfo['id']
-    flask.session['name']=postInfo['id']
-    return flask.redirect(flask.url_for('oauth2callback'))
-  else:
-    print "Credentials located"
-    return json.dumps({"success":True, "url":None})
+  try:
+    if 'credentials' not in flask.session:
+      # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+      postInfo=flask.request.json
+      print postInfo
+      # print postInfo[0]
+      flask.session['name']=postInfo['id']
+      return flask.redirect(flask.url_for('oauth2callback'))
+    credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
+    if credentials.access_token_expired:
+      # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+      postInfo=flask.request.json
+      print postInfo
+      # print postInfo[0]
+      flask.session['name']=postInfo['id']
+      return flask.redirect(flask.url_for('oauth2callback'))
+    else:
+      print "Credentials located"
+      return json.dumps({"success":True, "url":None})
+  except Exception,e:
+    print str(e)
+    return json.dumps({"success":False})
 
 @app.route('/magic', methods=["POST"])
 def magic():
