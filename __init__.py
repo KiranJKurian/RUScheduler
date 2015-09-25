@@ -77,15 +77,16 @@ def donate():
 def authorize():
   if 'credentials' not in flask.session:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    postInfo=flask.request.json
+    postInfo=json.dumps(json.dumps(flask.request.json))
     print postInfo
     flask.session['name']=postInfo['id']
     return flask.redirect(flask.url_for('oauth2callback'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    postInfo=json.dumps(flask.request.json)
+    postInfo=json.dumps(json.dumps(flask.request.json))
     print postInfo
+    print postInfo['id']
     flask.session['name']=postInfo['id']
     return flask.redirect(flask.url_for('oauth2callback'))
   else:
