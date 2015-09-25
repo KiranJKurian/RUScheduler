@@ -86,6 +86,7 @@ def authorize():
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
     postInfo=json.dumps(flask.request.json)
     print postInfo
+    print postInfo['id']
     flask.session['name']=postInfo['id']
     return flask.redirect(flask.url_for('oauth2callback'))
   else:
