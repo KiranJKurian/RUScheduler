@@ -12,13 +12,15 @@ var func='getCalendars';
 
 function storage_handler(evt)
 {
-  if(evt.key==getName()&&evt.newValue!=evt.oldValue){
-    if(development){
+  console.log("fired!");
+  if(localStorage.getItem(name)=="true"){
+    // if(development){
       console.log(getName());
-    }
+    // }
+    localStorage.setItem(getName(),false);
     localStorage.removeItem(evt.key);
     newName();
-    authorize();
+    authorize(func);
   }
 }
 
