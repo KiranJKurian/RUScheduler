@@ -48,15 +48,15 @@ def classes(http_auth, inputJSON):
 		for meetingDay in cInfo['meetingDays']:
 		    day="%s"%(meetingDay['day']).lower()
 		    if day=="monday" or day=="m":
-		        startDate="2015-09-07"
+		        startDate="2016-01-25"
 		    elif day=="tuesday" or day=="t":
-		        startDate="2015-09-01"
+		        startDate="2016-01-19"
 		    elif day=="wednesday" or day=="w":
-		        startDate="2015-09-02"
+		        startDate="2016-01-20"
 		    elif day=="thursday" or day=="th":
-		        startDate="2015-09-03"
+		        startDate="2016-01-21"
 		    elif day=="friday" or day=="f":
-		        startDate="2015-09-04"
+		        startDate="2016-01-22"
 		    else:
 		        print "Invalid meetingDay"
 		        return json.dumps({"error":"Bad Input"})
@@ -87,7 +87,7 @@ def classes(http_auth, inputJSON):
 		     },
 		     "summary": summary,
 		     "recurrence": [
-		      'RRULE:FREQ=WEEKLY;UNTIL=20151211T000000Z',
+		      'RRULE:FREQ=WEEKLY;UNTIL=20160503T000000Z',
 		      # "EXDATE:TZID=America/New_York:20151126T134001Z,20151127T134001Z,20151128T134001Z,20151129T134001Z"
 		      # "EXDATE;TZID=America/New_York:20151126T%s%s00Z,20151127T%s%s00Z,20151128T%s%s00Z,20151129T%s%s00Z"%(startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:])
 		     ],
@@ -181,7 +181,7 @@ def pledge(http_auth,calDic):
 
 	for cal in calDic['ids']:
 		eventsResult = service.events().list(
-	        calendarId=cal, timeMin=now, timeMax=parse("2015-11-21").isoformat()+'Z', singleEvents=True,
+	        calendarId=cal, timeMin=now, timeMax=parse("2016-05-03").isoformat()+'Z', singleEvents=True,
 	        orderBy='startTime').execute()
 		events = eventsResult.get('items', [])
 

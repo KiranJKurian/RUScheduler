@@ -1,7 +1,7 @@
 import json
 import urllib2
 
-semester=92015
+semester=12016
 
 def isNum(s):
     try:
