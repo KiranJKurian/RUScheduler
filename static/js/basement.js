@@ -3,20 +3,49 @@ $( document ).ready(function() {
     var cap=5;
 
  	function update(){
- 		$("#numPeople").text(people);
- 		console.log("We have "+people+" people now!");
+        $.ajax({
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          url: "/basement/number",
+          success: function (data) {
+            people=data["people"];
+            $("#numPeople").text(people);
+            console.log("We have "+people+" people now!");
+          },
+          dataType: "json",
+        });
  	}
 
+    update();
+
     $("#up").click(function(){
-    	people++;
-    	update();
+    	$.ajax({
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          url: "/basement/add",
+          success: function (data) {
+            people=data["people"];
+            $("#numPeople").text(people);
+            console.log("We have "+people+" people now!");
+          },
+          dataType: "json",
+        });
         if(people>=cap){
             alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
         }
     })
     $("#down").click(function(){
-    	people--;
-    	update();
+    	$.ajax({
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          url: "/basement/subtract",
+          success: function (data) {
+            people=data["people"];
+            $("#numPeople").text(people);
+            console.log("We have "+people+" people now!");
+          },
+          dataType: "json",
+        });
     })
     $("#count").click(function(){
     	update();
@@ -24,6 +53,5 @@ $( document ).ready(function() {
             alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
         }
     })
-
  
 });
