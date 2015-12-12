@@ -9,6 +9,9 @@ $( document ).ready(function() {
     $("#up").click(function(){
     	people++;
     	update();
+        if(people>=5){
+            alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
+        }
     })
     $("#down").click(function(){
     	people--;
