@@ -7,8 +7,13 @@ from apiclient import discovery
 
 from CourseInfo import courseInfo
 
+from pymongo import MongoClient
+
 from dateutil.parser import *
 import datetime
+
+client = MongoClient()
+db=client.fall15
 
 def classes(http_auth, inputJSON):
 	service = discovery.build('calendar', 'v3', http_auth)
@@ -155,6 +160,36 @@ def getCalID(summary, service):
 			return calendar_list_entry['id']
 	return None
 
+def basementClear():
+	db.basement.remove()
+	return 1;
+def basementGetPeople():
+	cursor=db.basement.find()
+	for document in cursor:
+		if "people" in document:
+			return document['people']
+	return -1
+
+def basementAddPerson():
+	people=basementGetPeople()
+	if people==-1:
+		db.basement.insert({"people":1})
+		people=1
+	else:
+		db.basement.update({"people":people},{"people":(people+1)})
+		people=people+1
+	return people;
+def basementSubtractPerson():
+	people=basementGetPeople()
+	if people==-1:
+		db.basement.insert({"people":0})
+		people=0
+	elif people==0:
+		return people
+	else:
+		db.basement.update({"people":people},{"people":(people-1)})
+		people=people-1
+	return people;
 
 def pledge(http_auth,calDic):
 	service = discovery.build('calendar', 'v3', http_auth)

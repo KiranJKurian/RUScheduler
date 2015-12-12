@@ -1,5 +1,6 @@
 $( document ).ready(function() {
  	var people=0;
+    var cap=5;
 
  	function update(){
  		$("#numPeople").text(people);
@@ -9,7 +10,7 @@ $( document ).ready(function() {
     $("#up").click(function(){
     	people++;
     	update();
-        if(people>=5){
+        if(people>=cap){
             alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
         }
     })
@@ -19,6 +20,10 @@ $( document ).ready(function() {
     })
     $("#count").click(function(){
     	update();
+        if(people>=cap){
+            alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
+        }
     })
+
  
 });

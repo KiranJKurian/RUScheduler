@@ -136,6 +136,26 @@ def magicPledge():
     # service = discovery.build('calendar', 'v3', http_auth)
     return main.pledge(http_auth,flask.request.json)
 
+@app.route('/basement/number', methods=["GET"])
+def basementGetPeople():
+  people=main.basementGetPeople()
+  return json.dumps({"people":people})
+
+@app.route('/basement/add', methods=["GET"])
+def basementAddPerson():
+  people=main.basementAddPerson()
+  return json.dumps({"people":people})
+
+@app.route('/basement/subtract', methods=["GET"])
+def basementSubtractPerson():
+  people=main.basementSubtractPerson()
+  return json.dumps({"people":people})
+
+@app.route('/basement/clear', methods=["GET"])
+def basementClear():
+  people=main.basementClear()
+  return json.dumps({"people":people})
+
 @app.route('/getCalendars', methods=["GET"])
 def getCalendars():
   if 'credentials' not in flask.session:
