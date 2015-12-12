@@ -7,6 +7,7 @@ $( document ).ready(function() {
           type: "GET",
           contentType: "application/json; charset=utf-8",
           url: "/basement/number",
+          async: false,
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
