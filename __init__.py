@@ -16,7 +16,7 @@ import main
 
 app = flask.Flask(__name__)
 
-development=False
+development=True
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
@@ -40,6 +40,16 @@ def pledge():
     # raise Exception('Testing')
     try:
         return render_template('pledge.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
+@app.route('/basement')
+def basement():
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('basement.html')
     except:
         print "Cannot render template"
         return "Error with rendering template"
