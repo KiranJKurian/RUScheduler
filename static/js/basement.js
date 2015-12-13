@@ -1,6 +1,6 @@
 $( document ).ready(function() {
  	var people=0;
-    var cap=5;
+    var cap=999;
 
  	function update(){
         $.ajax({
