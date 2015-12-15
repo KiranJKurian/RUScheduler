@@ -16,7 +16,7 @@ $( document ).ready(function() {
           dataType: "json",
         });
  	}
- 	setInterval(update, 10000);
+ 	setInterval(update, 5000);
     update();
 
     $("#up").click(function(){
