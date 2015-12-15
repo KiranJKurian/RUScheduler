@@ -11,7 +11,7 @@ $( document ).ready(function() {
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
-            console.log("We have "+people+" people now!");
+            // console.log("We have "+people+" people now!");
           },
           dataType: "json",
         });
