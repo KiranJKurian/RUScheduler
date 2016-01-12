@@ -13,7 +13,7 @@ from dateutil.parser import *
 import datetime
 
 client = MongoClient(port=27106)
-db=client.fall15
+db=client.spring16
 
 def classes(http_auth, inputJSON):
 	service = discovery.build('calendar', 'v3', http_auth)
@@ -140,6 +140,7 @@ def classes(http_auth, inputJSON):
 		    	if instanceStart>=parse("2016-03-12") and instanceStart<=parse("2016-03-20"):
 		    		instance['status'] = 'cancelled'
 		    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
+		# db.basement.insert({"name":"personName","email":"personEmail",})
 		returnDict["success"].append(summary)
 		# except:
 		# 	if prompted:
@@ -150,6 +151,10 @@ def classes(http_auth, inputJSON):
 		# 		print "Token error"
 		# 		returnDict["error"]="Access Token Error"
 		# 		return json.dumps(returnDict)
+	print returnDict
+	# db.scheduler.remove()
+	db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
+	print "Added to DB"
 	return json.dumps(returnDict)
 
 def getCalendars(http_auth):
