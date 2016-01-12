@@ -11,15 +11,16 @@ $( document ).ready(function() {
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
-            console.log("We have "+people+" people now!");
+            // console.log("We have "+people+" people now!");
           },
           dataType: "json",
         });
  	}
-
+ 	setInterval(update, 5000);
     update();
 
     $("#up").click(function(){
+    	$("#up").addClass("active").removeClass("success");
     	$.ajax({
           type: "GET",
           contentType: "application/json; charset=utf-8",
@@ -27,6 +28,7 @@ $( document ).ready(function() {
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
+            $("#up").removeClass("active").addClass("success");
             console.log("We have "+people+" people now!");
           },
           dataType: "json",
@@ -36,6 +38,7 @@ $( document ).ready(function() {
         }
     })
     $("#down").click(function(){
+     $("#down").addClass("active").removeClass("danger");
     	$.ajax({
           type: "GET",
           contentType: "application/json; charset=utf-8",
@@ -43,13 +46,16 @@ $( document ).ready(function() {
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
+            $("#down").removeClass("active").addClass("danger");
             console.log("We have "+people+" people now!");
           },
           dataType: "json",
         });
     })
     $("#count").click(function(){
+    	$("#count").addClass("active").removeClass("info");
     	update();
+    	$("#count").removeClass("active").addClass("info");
         if(people>=cap){
             alert("We are now at capacity. DO NOT LET MORE PEOPLE IN!");
         }
