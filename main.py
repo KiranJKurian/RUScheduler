@@ -93,13 +93,14 @@ def classes(http_auth, inputJSON):
 		     "summary": summary,
 		     "recurrence": [
 		      'RRULE:FREQ=WEEKLY;UNTIL=20160503T000000Z',
-		      # "EXDATE:TZID=America/New_York:20151126T134001Z,20151127T134001Z,20151128T134001Z,20151129T134001Z"
+		      # "EXDATE:20160314T%s%s00Z"%(startTime[:2],startTime[3:])
 		      # "EXDATE;TZID=America/New_York:20151126T%s%s00Z,20151127T%s%s00Z,20151128T%s%s00Z,20151129T%s%s00Z"%(startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:])
 		     ],
 		     "colorId": color,
 		     "reminders": {
 		      "useDefault":"false",
-		      "overrides": []
+		      "overrides": [],
+		      "description":"Added with RUScheduler! %s:%s:%s"%(subNum,courseNum,sectionNum)
 		    }
 		    }
 
@@ -126,8 +127,19 @@ def classes(http_auth, inputJSON):
 		          })
 
 		    recurring_event = service.events().insert(calendarId='primary', body=event).execute()
-		    recurring_event
+		    eventID=recurring_event.get("id")
 		    print "success"
+
+		    instances = service.events().instances(calendarId='primary', eventId="%s"%eventID,timeMin=parse("2016-03-12").isoformat()+'Z',timeMax=parse("2016-03-20").isoformat()+'Z').execute()['items']
+		    for instance in instances:
+		    	if instance['start'].has_key("dateTime"):
+		    		instanceStart= parse(instance['start']['dateTime']).replace(tzinfo=None)
+		    	else:
+		    		instanceStart= parse(instance['start']['date']).replace(tzinfo=None)
+		    	# Exclusion for Spring Break
+		    	if instanceStart>=parse("2016-03-12") and instanceStart<=parse("2016-03-20"):
+		    		instance['status'] = 'cancelled'
+		    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
 		returnDict["success"].append(summary)
 		# except:
 		# 	if prompted:
