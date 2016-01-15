@@ -50,7 +50,7 @@ def courseInfo(subNum,courseNum,sectionNum,school):
                         else:
                             return None
                         if meetingTimes['endTime']:
-                            if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12":
+                            if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12" or int(meetingTimes['endTime'][:2])<int(meetingTimes['startTime'][:2]):
                                 meeting['endTime']="%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:])
                             else:
                                 meeting['endTime']="%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:])
