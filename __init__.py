@@ -1,4 +1,5 @@
 import json
+import os
 
 import flask
 
@@ -190,6 +191,7 @@ def oauth2callback():
 @app.route("/updateSelf/")
 def updateSelf():
 	output = os.popen("git pull").read()
+	print output
 	return jsonify({"message":"Success", "output":str(output)})
 
 @app.errorhandler(500)
