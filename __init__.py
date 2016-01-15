@@ -188,9 +188,9 @@ def oauth2callback():
     return flask.redirect(flask.url_for('loggedIn'))
 
 @app.route("/updateSelf/")
-    def updateSelf():
-        output = os.popen("git pull").read()
-        return jsonify({"message":"Success", "output":str(output)})
+def updateSelf():
+	output = os.popen("git pull").read()
+	return jsonify({"message":"Success", "output":str(output)})
 
 @app.errorhandler(500)
 def internal_error(error):
