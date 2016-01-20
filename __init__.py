@@ -44,6 +44,16 @@ def pledge():
         print "Cannot render template"
         return "Error with rendering template"
 
+@app.route('/brother')
+def brother():
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('brothers.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
 @app.route('/basement')
 def basement():
     # flask.session.clear()
@@ -134,7 +144,21 @@ def magicPledge():
   else:
     http_auth = credentials.authorize(httplib2.Http())
     # service = discovery.build('calendar', 'v3', http_auth)
-    return main.pledge(http_auth,flask.request.json)
+    return main.addToCal(http_auth,flask.request.json)
+
+@app.route('/magicBrother', methods=["POST"])
+def magicBrother():
+  if 'credentials' not in flask.session:
+    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+    return flask.redirect(flask.url_for('oauth2callback'))
+  credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
+  if credentials.access_token_expired:
+    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+    return flask.redirect(flask.url_for('oauth2callback'))
+  else:
+    http_auth = credentials.authorize(httplib2.Http())
+    # service = discovery.build('calendar', 'v3', http_auth)
+    return main.addToCal(http_auth,flask.request.json,"Phi Sig- Brothers Schedules")
 
 @app.route('/basement/number', methods=["GET"])
 def basementGetPeople():
@@ -168,7 +192,7 @@ def getCalendars():
   else:
     http_auth = credentials.authorize(httplib2.Http())
     # service = discovery.build('calendar', 'v3', http_auth)
-    return main.getCalendars(http_auth)
+    return main.getCalendars(http_auth,["Rho Eta","Phi Sig- Brothers Schedules","ruphisigmakappa@gmail.com","Birthdays","Holidays in United States"])
 
 
 @app.route('/oauth2callback', methods=["GET"])

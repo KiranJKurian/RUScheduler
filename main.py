@@ -36,8 +36,6 @@ def classes(http_auth, inputJSON):
 		courseNum=classInfo['courseNum']
 		sectionNum=classInfo['sectionNum']	
 
-		# try:
-
 		cInfo=courseInfo(subNum,courseNum,sectionNum,school)
 		print cInfo
 
@@ -93,8 +91,6 @@ def classes(http_auth, inputJSON):
 		     "summary": summary,
 		     "recurrence": [
 		      'RRULE:FREQ=WEEKLY;UNTIL=20160503T000000Z',
-		      # "EXDATE:20160314T%s%s00Z"%(startTime[:2],startTime[3:])
-		      # "EXDATE;TZID=America/New_York:20151126T%s%s00Z,20151127T%s%s00Z,20151128T%s%s00Z,20151129T%s%s00Z"%(startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:],startTime[:2],startTime[3:])
 		     ],
 		     "colorId": color,
 		     "reminders": {
@@ -140,29 +136,22 @@ def classes(http_auth, inputJSON):
 		    	if instanceStart>=parse("2016-03-12") and instanceStart<=parse("2016-03-20"):
 		    		instance['status'] = 'cancelled'
 		    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
-		# db.basement.insert({"name":"personName","email":"personEmail",})
 		returnDict["success"].append(summary)
-		# except:
-		# 	if prompted:
-		# 		print "Auth error"
-		# 		returnDict["error"]="Authorization Error"
-		# 		return json.dumps(returnDict)
-		# 	else:
-		# 		print "Token error"
-		# 		returnDict["error"]="Access Token Error"
-		# 		return json.dumps(returnDict)
+
 	print returnDict
 	# db.scheduler.remove()
 	db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
 	print "Added to DB"
 	return json.dumps(returnDict)
 
-def getCalendars(http_auth):
+def getCalendars(http_auth, filters=None):
 	try:
 		service = discovery.build('calendar', 'v3', http_auth)
 		calendar_list = service.calendarList().list().execute()
 		calendars={"items":[]}
 	  	for calendar_list_entry in calendar_list['items']:
+			if calendar_list_entry['summary'] in filters:
+				continue
 			info={"summary":calendar_list_entry['summary'],"id":calendar_list_entry['id']}
 			calendars['items'].append(info)
 		# print calendars
@@ -208,11 +197,12 @@ def basementSubtractPerson():
 		people=people-1
 	return people;
 
-def pledge(http_auth,calDic):
+def addToCal(http_auth,calDic,calName='Rho Eta'):
 	service = discovery.build('calendar', 'v3', http_auth)
 	SERVICE = discovery.build('plus', 'v1', http_auth)
 
 	# print "Calendars:\n%s"%calDic
+	# db.brothers.remove()
 
 	people_resource = SERVICE.people()
 	people_document = people_resource.get(userId='me').execute()
@@ -226,23 +216,37 @@ def pledge(http_auth,calDic):
 	
 	calEvents=[]
 
-	calID=getCalID('Rho Eta',service)
+	calID=getCalID(calName,service)
 	if calID==None:
 		returnDict={"error":"Insufficient Permissions"}
 		return json.dumps(returnDict)
 
+	eventIDs=[]
+	originalIDs=[]
+
 	for cal in calDic['ids']:
 		eventsResult = service.events().list(
-	        calendarId=cal, timeMin=now, timeMax=parse("2016-05-03").isoformat()+'Z', singleEvents=True,
-	        orderBy='startTime').execute()
+	        calendarId=cal, timeMin=now, timeMax=parse("2016-05-03").isoformat()+'Z').execute()
 		events = eventsResult.get('items', [])
 
 		if not events:
 			print('No upcoming events found.')
 		for event in events:
+			found=db.brothers.find_one({'email':returnDict["email"]})
+
+			if event['status']=='cancelled'or not event.has_key('summary'):
+				# if found:
+				# 	removeEvent(event['recurringEventId'],returnDict["email"],service)
+				continue	
+			
+			if found:
+				if event['id'] in found['originalIDs']:
+					continue
+
 			start = event['start'].get('dateTime', event['start'].get('date'))
 
 			end = event['end'].get('dateTime', event['end'].get('date'))
+
 			item={"start":start, "summary": event['summary'], "end": end}
 			calEvents.append(item)
 			calEvent = {
@@ -254,6 +258,13 @@ def pledge(http_auth,calDic):
 			    # 'dateTime': item['end'],
 			  },
 			}
+			if event.has_key('recurrence'):
+				calEvent['recurrence']=event['recurrence']
+
+			if event['start'].has_key('timeZone'):
+				calEvent['start']['timeZone']=event['start']['timeZone']
+				calEvent['end']['timeZone']=event['start']['timeZone']
+
 			if event['start'].has_key('dateTime'):
 				calEvent['start']['dateTime']=item['start']
 				calEvent['end']['dateTime']=item['end']
@@ -263,11 +274,48 @@ def pledge(http_auth,calDic):
 				calEvent['end']['date']=item['end']
 				# print 'date'
 			# print calEvent
-			service.events().insert(calendarId=calID, body=calEvent).execute()
+			newEvent = service.events().insert(calendarId=calID, body=calEvent).execute()
+			eventIDs.append(newEvent.get("id"))
+			originalIDs.append(event.get("id"))
+			print "Added %s"%event['summary']
+	addEventsToDB(eventIDs,originalIDs,returnDict["name"],returnDict["email"])
 	# print json.dumps(calEvents)
 	# except Exception,e:
 	# 	returnDict['error']=str(e)
 	return json.dumps(returnDict)
+
+#Phi Sig- Brothers Schedules
+def addEventsToDB(eventIDs,originalIDs,name,email):
+	found=db.brothers.find_one({'email':email})
+	if found:
+		db.brothers.update_one(
+			{'email':email}, 
+			{"$set":
+				{	"eventIDs" : found['eventIDs']+eventIDs,
+					"originalIDs" : found['originalIDs']+originalIDs
+				}
+			}
+		)
+	else:
+		db.brothers.insert({ 'email':email,'brother':name,'eventIDs':eventIDs,'originalIDs':originalIDs})
+
+#currently to cancel instances of recurring events, doesnt work
+def removeEvent(eventID,email,service):
+	found=db.brothers.find_one({'email':email})
+	if not found:
+		return
+	index=found['originalIDs'].index(eventID)
+	originalIDs=found['originalIDs'].remove(eventID)
+	eventID=found['eventIDs'][index]
+	eventIDs=found['eventIDs'].remove(eventID)
+	db.brothers.update_one(
+		{'email':email}, 
+		{	
+			"$set": { 'eventIDs':eventIDs,'originalIDs':originalIDs}
+		}
+	)
+	service.events().delete(calendarId='primary', eventId=eventID).execute()
+
   
 
 

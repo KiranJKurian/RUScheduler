@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<!--
+  Alpha by HTML5 UP
+  html5up.net | @n33co
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>RUScheduler</title>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <meta name="description" content="" />
+      <meta name="keywords" content="" />
+      <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style-wide.css') }}" />
+      <script rel ="js" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.dropotron.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/skel-layers.min.js') }}"></script>
+    <script rel ="js" src="{{ url_for('static', filename='js/init.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/brother.js') }}"></script>
+    <style>
+      ::-webkit-input-placeholder {
+         text-align: center;
+      }
+
+      :-moz-placeholder { /* Firefox 18- */
+         text-align: center;  
+      }
+
+      ::-moz-placeholder {  /* Firefox 19+ */
+         text-align: center;  
+      }
+
+      :-ms-input-placeholder {  
+         text-align: center; 
+      }
+      input{
+       text-align:center;
+      }
+    </style>
+
+    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+  </head>
+  <body>
+
+    <!-- Header -->
+      <header id="header" class="skel-layers-fixed">
+        <h1><a href="/">RUScheduler</a> by Kiran Kurian</h1>
+        <nav id="nav">
+          <ul>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="/faq">FAQs</a></li>
+            <li><a href="https://github.com/GrandmasterK/RUScheduler">Github</a></li>
+          </ul>
+        </nav>
+      </header>
+
+    <!-- Main -->
+      <section id="main" class="container">
+        <header>
+          <h2>Phi Sig</h2>
+          <h3>Brothers</h3>
+          <p>Add your schedule to our Google Calendar</p>
+        </header>
+        <div class="row">
+          <div class="12u">
+            <div id="title" style="text-align:center;"></div>
+            <!-- Form -->
+              <section class="box">
+               <!--  <form id="form">
+                  <div class="row uniform 50%">
+                    <div class="12u 12u(2)">
+                      <center><input type="text" name="name" id="name" value="" placeholder="Name" /></center>
+                    </div>
+                  </div>
+                <div style="visibility: hidden">Just so you know, Kiran Kurian is awesome. Carry on.</div>
+                </form> -->
+                <div class="row uniform">
+                    <div class="12u"><center>
+                      <div id='calendarList'></div>                         
+                      <ul class="actions">
+                        <a id="getCalendars" class="button fit">View Calendars</a>
+                        <a hidden id="add" class="button fit">Add Schedule</a>
+                        <a hidden id="newForm" class="button fit">Add Schedule again because you messed up somehow...</a>
+                      </ul></center> 
+                    </div>
+                  </div>
+
+    
+
+
+  </body>
+</html>
