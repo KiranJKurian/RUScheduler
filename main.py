@@ -288,11 +288,13 @@ def addToCal(http_auth,calDic,calName='Rho Eta'):
 def addEventsToDB(eventIDs,originalIDs,name,email):
 	found=db.brothers.find_one({'email':email})
 	if found:
+		eventIDs=found['eventIDs']+eventIDs
+		originalIDs=found['originalIDs']+originalIDs
 		db.brothers.update_one(
 			{'email':email}, 
 			{"$set":
-				{	"eventIDs" : found['eventIDs']+eventIDs,
-					"originalIDs" : found['originalIDs']+originalIDs
+				{	"eventIDs" : eventIDs,
+					"originalIDs" : originalIDs
 				}
 			}
 		)
