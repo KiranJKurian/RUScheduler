@@ -48,19 +48,19 @@ def courseInfo(subNum,courseNum,sectionNum,school):
                             else:
                                 meeting['startTime']="%s:%s"%(meetingTimes['startTime'][:2],meetingTimes['startTime'][2:])
                         else:
-                            return None
+                            continue
                         if meetingTimes['endTime']:
                             if meetingTimes["pmCode"]=="P" and meetingTimes['endTime'][:2]!="12" or int(meetingTimes['endTime'][:2])<int(meetingTimes['startTime'][:2]):
                                 meeting['endTime']="%s:%s"%(str((int)(meetingTimes['endTime'][:2])+12),meetingTimes['endTime'][2:])
                             else:
                                 meeting['endTime']="%s:%s"%(meetingTimes['endTime'][:2],meetingTimes['endTime'][2:])
                         else:
-                            return None
+                            continue
                         if meetingTimes['meetingDay']:
                             meeting['day']=meetingTimes['meetingDay']
                         else:
-                            return None
-                        if not meetingTimes["meetingModeDesc"] or meetingTimes["meetingModeDesc"]=="ONLINE INSTRUCTION(INTERNET)":
+                            continue
+                        if not meetingTimes["meetingModeDesc"] or meetingTimes["meetingModeDesc"]=="ONLINE INSTRUCTION(INTERNET)" or meetingTimes["meetingModeDesc"]=="HYBRID SECTION":
                             meeting['location']="Online"
                         else:
                             loc=location(meetingTimes['buildingCode'])

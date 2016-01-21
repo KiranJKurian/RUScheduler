@@ -292,10 +292,11 @@ def addEventsToDB(eventIDs,originalIDs,name,email):
 		originalIDs=found['originalIDs']+originalIDs
 		db.brothers.update_one(
 			{'email':email}, 
-			{"$set":
-				{	"eventIDs" : eventIDs,
-					"originalIDs" : originalIDs
-				}
+			{
+				"$set":
+					{	"eventIDs" : eventIDs,
+						"originalIDs" : originalIDs
+					}
 			}
 		)
 	else:
