@@ -6,7 +6,7 @@ $( document ).ready(function() {
         $.ajax({
           type: "GET",
           contentType: "application/json; charset=utf-8",
-          url: "/basement/number",
+          url: "/party/number",
           async: false,
           success: function (data) {
             people=data["people"];
@@ -24,7 +24,7 @@ $( document ).ready(function() {
     	$.ajax({
           type: "GET",
           contentType: "application/json; charset=utf-8",
-          url: "/basement/add",
+          url: "/party/add",
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
@@ -42,7 +42,7 @@ $( document ).ready(function() {
     	$.ajax({
           type: "GET",
           contentType: "application/json; charset=utf-8",
-          url: "/basement/subtract",
+          url: "/party/subtract",
           success: function (data) {
             people=data["people"];
             $("#numPeople").text(people);
