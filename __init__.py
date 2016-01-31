@@ -183,10 +183,10 @@ def partyClear():
 @app.route('/supervisor', methods=["GET"])
 def supervisor():
   try:
-        return render_template('supervisor.html')
-    except:
-        print "Cannot render template"
-        return "Error with rendering template"
+    return render_template('supervisor.html')
+  except:
+    print "Cannot render template"
+    return "Error with rendering template"
 
 @app.route('/getCalendars', methods=["GET"])
 def getCalendars():
