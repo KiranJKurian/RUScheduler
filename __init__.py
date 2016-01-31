@@ -180,6 +180,14 @@ def partyClear():
   people=main.partyClear()
   return json.dumps({"people":people})
 
+@app.route('/supervisor', methods=["GET"])
+def supervisor():
+  try:
+        return render_template('supervisor.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
 @app.route('/getCalendars', methods=["GET"])
 def getCalendars():
   if 'credentials' not in flask.session:
