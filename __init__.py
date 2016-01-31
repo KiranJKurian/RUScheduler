@@ -54,12 +54,12 @@ def brother():
         print "Cannot render template"
         return "Error with rendering template"
 
-@app.route('/basement')
-def basement():
+@app.route('/party')
+def party():
     # flask.session.clear()
     # raise Exception('Testing')
     try:
-        return render_template('basement.html')
+        return render_template('party.html')
     except:
         print "Cannot render template"
         return "Error with rendering template"
@@ -160,24 +160,24 @@ def magicBrother():
     # service = discovery.build('calendar', 'v3', http_auth)
     return main.addToCal(http_auth,flask.request.json,"Phi Sig- Brothers Schedules")
 
-@app.route('/basement/number', methods=["GET"])
-def basementGetPeople():
-  people=main.basementGetPeople()
+@app.route('/party/number', methods=["GET"])
+def partyGetPeople():
+  people=main.partyGetPeople()
   return json.dumps({"people":people})
 
-@app.route('/basement/add', methods=["GET"])
-def basementAddPerson():
-  people=main.basementAddPerson()
+@app.route('/party/add', methods=["GET"])
+def partyAddPerson():
+  people=main.partyAddPerson()
   return json.dumps({"people":people})
 
-@app.route('/basement/subtract', methods=["GET"])
-def basementSubtractPerson():
-  people=main.basementSubtractPerson()
+@app.route('/party/subtract', methods=["GET"])
+def partySubtractPerson():
+  people=main.partySubtractPerson()
   return json.dumps({"people":people})
 
-@app.route('/basement/clear', methods=["GET"])
-def basementClear():
-  people=main.basementClear()
+@app.route('/party/clear', methods=["GET"])
+def partyClear():
+  people=main.partyClear()
   return json.dumps({"people":people})
 
 @app.route('/getCalendars', methods=["GET"])

@@ -166,34 +166,34 @@ def getCalID(summary, service):
 			return calendar_list_entry['id']
 	return None
 
-def basementClear():
-	db.basement.remove()
+def partyClear():
+	db.party.remove()
 	return 1;
-def basementGetPeople():
-	cursor=db.basement.find()
+def partyGetPeople():
+	cursor=db.party.find()
 	for document in cursor:
 		if "people" in document:
 			return document['people']
 	return -1
 
-def basementAddPerson():
-	people=basementGetPeople()
+def partyAddPerson():
+	people=partyGetPeople()
 	if people==-1:
-		db.basement.insert({"people":1})
+		db.party.insert({"people":1})
 		people=1
 	else:
-		db.basement.update({"people":people},{"people":(people+1)})
+		db.party.update({"people":people},{"people":(people+1)})
 		people=people+1
 	return people;
-def basementSubtractPerson():
-	people=basementGetPeople()
+def partySubtractPerson():
+	people=partyGetPeople()
 	if people==-1:
-		db.basement.insert({"people":0})
+		db.party.insert({"people":0})
 		people=0
 	elif people==0:
 		return people
 	else:
-		db.basement.update({"people":people},{"people":(people-1)})
+		db.party.update({"people":people},{"people":(people-1)})
 		people=people-1
 	return people;
 
