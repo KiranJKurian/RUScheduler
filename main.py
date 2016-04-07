@@ -51,15 +51,15 @@ def classes(http_auth, inputJSON):
 		for meetingDay in cInfo['meetingDays']:
 		    day="%s"%(meetingDay['day']).lower()
 		    if day=="monday" or day=="m":
-		        startDate="2016-01-25"
+		        startDate="2016-09-12"
 		    elif day=="tuesday" or day=="t":
-		        startDate="2016-01-19"
+		        startDate="2016-09-06"
 		    elif day=="wednesday" or day=="w":
-		        startDate="2016-01-20"
+		        startDate="2016-09-07"
 		    elif day=="thursday" or day=="th":
-		        startDate="2016-01-21"
+		        startDate="2016-09-08"
 		    elif day=="friday" or day=="f":
-		        startDate="2016-01-22"
+		        startDate="2016-09-09"
 		    else:
 		        print "Invalid meetingDay"
 		        return json.dumps({"error":"Bad Input"})
