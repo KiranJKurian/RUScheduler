@@ -21,7 +21,7 @@ class CustomFlask(Flask):
     variable_end_string='}}}',
   ))
 
-app = CustomFlask(__name__)
+app = CustomFlask(__name__, static_url_path='')
 
 development=False
 
