@@ -4,18 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{{ url_for('static', filename='images/favicon.ico') }}}" />
 
-    <link href="bower_components/paper-styles/paper-styles.html" rel="import">
-    <link href="bower_components/paper-fab/paper-fab.html" rel="import">
-    <link href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html" rel="import">
-    <link href="bower_components/paper-listbox/paper-listbox.html" rel="import">
-    <link href="bower_components/paper-item/paper-item.html" rel="import">
-    <link href="bower_components/paper-checkbox/paper-checkbox.html" rel="import">
-    <link href="bower_components/iron-icons/iron-icons.html" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-styles/paper-styles.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-fab/paper-fab.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-dropdown-menu/paper-dropdown-menu.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-listbox/paper-listbox.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-item/paper-item.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-checkbox/paper-checkbox.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/iron-icons/iron-icons.html') }}}" rel="import">
 
 	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-    <link href="bower_components/iron-media-query/iron-media-query.html" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/iron-media-query/iron-media-query.html') }}}" rel="import">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
@@ -171,7 +171,7 @@
 	    app.courses = ["Loading..."]
 	    app.sections = ["Loading..."]
 
-	    $.getJSON( "data/subjects.json", function( data ) {
+	    $.getJSON( "{{{ url_for('static', filename='data/subjects.json') }}}", function( data ) {
 			app.subjects = data
 		});
 

@@ -51,13 +51,13 @@ def demo():
         print "Cannot render template"
         return "Error with rendering template"
 
-@app.route("/bower_components/<path:fileName>")
-def load_bower(fileName):
-    return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"bower_components"), fileName)
+# @app.route("/bower_components/<path:fileName>")
+# def load_bower(fileName):
+#     return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"bower_components"), fileName)
 
-@app.route("/data/<path:fileName>")
-def load_data(fileName):
-    return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"data"), fileName)
+# @app.route("/data/<path:fileName>")
+# def load_data(fileName):
+#     return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"data"), fileName)
 
 @app.route('/pledge')
 def pledge():
