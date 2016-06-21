@@ -1,4 +1,5 @@
 import json
+import urllib2
 import os
 
 import flask
@@ -58,6 +59,21 @@ def demo():
 # @app.route("/data/<path:fileName>")
 # def load_data(fileName):
 #     return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"data"), fileName)
+
+@app.route("/subject/<subject>")
+def subjectJSON(subject):
+  try:
+    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=92016&subject=%s&campus=NB&level=UG"%subject).read()
+  except:
+    return app.send_static_file('static/data/Courses/%s.json'%subject)
+
+@app.route("/subjects")
+def subjectsJSON():
+  try:
+    print "Getting subjects..."
+    return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=92016&campus=NB&level=U").read()
+  except:
+    return app.send_static_file('static/data/subjects.json')
 
 @app.route('/pledge')
 def pledge():

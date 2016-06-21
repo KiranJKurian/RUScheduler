@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="{{{ url_for('static', filename='bower_components/webcomponentsjs/webcomponents-lite.min.js') }}}"></script>
 
     <link rel="shortcut icon" href="{{{ url_for('static', filename='images/favicon.ico') }}}" />
 
@@ -38,7 +38,7 @@
 							<h3>Subject</h3>
 							<paper-dropdown-menu>
 								<paper-listbox class="dropdown-content">
-									<template is="dom-repeat" id="subject-list" items="{{{subjects}}}" as="subject">
+									<template is="dom-repeat" id="subject-list" items="{{subjects}}" as="subject">
 										<paper-item code="[[subject.code]]" on-tap="subjectSelection">{{subject.description}} ({{subject.code}})</paper-item>
 									</template>
 								</paper-listbox>
@@ -171,7 +171,7 @@
 	    app.courses = ["Loading..."]
 	    app.sections = ["Loading..."]
 
-	    $.getJSON( "{{{ url_for('static', filename='data/subjects.json') }}}", function( data ) {
+	    $.getJSON( "/subjects", function( data ) {
 			app.subjects = data
 		});
 
@@ -184,7 +184,7 @@
 
 			app.subjectSelected = e["srcElement"].code;
 
-			$.getJSON( "data/Courses/"+app.subjectSelected+".json", function( data ) {
+			$.getJSON( "/subject/"+app.subjectSelected, function( data ) {
 				app.courses = data
 			});
 		}
