@@ -13,7 +13,7 @@ from dateutil.parser import *
 import datetime
 
 client = MongoClient(port=27106)
-db=client.spring16
+db=client.fall16
 
 def classes(http_auth, inputJSON):
 	service = discovery.build('calendar', 'v3', http_auth)
@@ -25,7 +25,7 @@ def classes(http_auth, inputJSON):
 	returnDict={"success":[],"error":"None"}
 
 	returnDict["name"]=	people_document['displayName']
-	returnDict["email"]=	people_document['emails'][0]['value']
+	returnDict["email"]= people_document['emails'][0]['value']
 
 	inputDict=json.loads(inputJSON)
 	
@@ -197,6 +197,40 @@ def partySubtractPerson():
 		db.party.update({"people":people},{"people":(people-1)})
 		people=people-1
 	return people;
+
+def cheggClear():
+	db.chegg.remove()
+	return 1;
+def cheggGetPeople():
+	cursor=db.chegg.find()
+	for document in cursor:
+		if "people" in document:
+			return document['people']
+	return -1
+
+def cheggAddPerson(name):
+	people=cheggGetPeople()
+	if people==-1:
+		people = name
+		db.chegg.insert({"people":[people]})
+	elif name not in people:
+		print "People:"
+		print people
+		db.chegg.update({"people":people},{"people":(people+[name])})
+		print "New people:"
+		print cheggGetPeople()
+	return cheggGetPeople();
+def cheggSubtractPerson(name):
+	people=cheggGetPeople()
+	print "People:"
+	print people
+	if people==-1 or name not in people:
+		return "Not found"
+	else:
+		temp = people[:]
+		people.remove(name)
+		db.chegg.update({"people":temp},{"people":people})
+	return cheggGetPeople();
 
 def addToCal(http_auth,calDic,calName='Rho Eta'):
 	service = discovery.build('calendar', 'v3', http_auth)

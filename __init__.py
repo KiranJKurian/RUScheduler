@@ -3,7 +3,7 @@ import os
 
 import flask
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 
 import httplib2
 
@@ -14,7 +14,14 @@ import datetime
 
 import main
 
-app = flask.Flask(__name__)
+class CustomFlask(Flask):
+  jinja_options = Flask.jinja_options.copy()
+  jinja_options.update(dict(
+    variable_start_string='{{{',
+    variable_end_string='}}}',
+  ))
+
+app = CustomFlask(__name__)
 
 development=False
 
@@ -33,6 +40,24 @@ def index():
     except:
         print "Cannot render template"
         return "Error with rendering template"
+
+@app.route('/demo')
+def demo():
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('demo.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
+@app.route("/bower_components/<path:fileName>")
+def load_bower(fileName):
+    return send_from_directory("bower_components", fileName)
+
+@app.route("/data/<path:fileName>")
+def load_data(fileName):
+    return send_from_directory("data", fileName)
 
 @app.route('/pledge')
 def pledge():
@@ -60,6 +85,15 @@ def party():
     # raise Exception('Testing')
     try:
         return render_template('party.html')
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+@app.route('/chegg')
+def chegg():
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('chegg.html')
     except:
         print "Cannot render template"
         return "Error with rendering template"
@@ -117,6 +151,37 @@ def authorize():
   except Exception,e:
     print str(e)
     return json.dumps({"success":False})
+
+# @app.route('/activate')
+# def activate():
+#   flow = client.flow_from_clientsecrets(
+#       CLIENT_SECRETS,
+#       scope='https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email',
+#       redirect_uri=flask.url_for('oauth2callback', _external=True))
+#   if 'code' not in flask.request.args:
+#     auth_uri = flow.step1_get_authorize_url()
+#     return flask.redirect(flask.url_for(auth_uri))
+#   else:
+#     auth_code = flask.request.args.get('code')
+#     credentials = flow.step2_exchange(auth_code)
+#     flask.session['credentials'] = credentials.to_json()
+#     return flask.redirect(flask.url_for('loggedIn'))
+
+# @app.route('/oauth', methods=["GET"])
+# def oauth():
+#   flow = client.flow_from_clientsecrets(
+#       CLIENT_SECRETS,
+#       scope='https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email',
+#       redirect_uri=flask.url_for('oauth2callback', _external=True))
+#   if 'code' not in flask.request.args:
+#     auth_uri = flow.step1_get_authorize_url()
+#     # webbrowser.open_new_tab(auth_uri)
+#     return json.dumps({"success":True, "url":auth_uri})
+#   else:
+#     auth_code = flask.request.args.get('code')
+#     credentials = flow.step2_exchange(auth_code)
+#     flask.session['credentials'] = credentials.to_json()
+#     return flask.redirect(flask.url_for('loggedIn'))
 
 @app.route('/magic', methods=["POST"])
 def magic():
@@ -188,6 +253,30 @@ def supervisor():
     print "Cannot render template"
     return "Error with rendering template"
 
+@app.route('/chegg/people', methods=["GET"])
+def cheggGetPeople():
+  people=main.cheggGetPeople()
+  return json.dumps({"people":people})
+
+@app.route('/chegg/add/<name>', methods=["GET"])
+def cheggAddPerson(name):
+  print "Post info:"
+  print name
+  people=main.cheggAddPerson(name)
+  return json.dumps({"people":people})
+  # people=main.cheggAddPerson()
+  # return json.dumps({"people":people})
+
+@app.route('/chegg/subtract/<name>', methods=["GET"])
+def cheggSubtractPerson(name):
+  people=main.cheggSubtractPerson(name)
+  return json.dumps({"people":people})
+
+@app.route('/chegg/clear', methods=["GET"])
+def cheggClear():
+  success=main.cheggClear()
+  return json.dumps({"success":success})
+
 @app.route('/getCalendars', methods=["GET"])
 def getCalendars():
   if 'credentials' not in flask.session:
@@ -219,11 +308,6 @@ def oauth2callback():
     flask.session['credentials'] = credentials.to_json()
     return flask.redirect(flask.url_for('loggedIn'))
 
-@app.route("/updateSelf/")
-def updateSelf():
-	output = os.popen("git pull").read()
-	print output
-	return jsonify({"message":"Success", "output":str(output)})
 
 @app.errorhandler(500)
 def internal_error(error):

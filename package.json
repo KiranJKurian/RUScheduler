@@ -1,0 +1,24 @@
+{
+  "name": "ruscheduler",
+  "version": "2.0.0",
+  "description": "RUScheduler uses the Rutgers Schedule of Classes and Google Calendar APIs to allow users to add their classes to their Google Calendars by providing their subject, course, and section numbers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KiranJKurian/RUScheduler.git"
+  },
+  "keywords": [
+    "Google",
+    "Calendar",
+    "Rutgers"
+  ],
+  "author": "Kiran Kurian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KiranJKurian/RUScheduler/issues"
+  },
+  "homepage": "https://github.com/KiranJKurian/RUScheduler#readme"
+}

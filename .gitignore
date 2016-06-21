@@ -1,6 +1,7 @@
 # Configuration files
 client_secrets.json
 .DS_Store
+bower_components
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
