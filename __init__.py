@@ -24,7 +24,7 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__, static_url_path='')
 
-development=True
+development=False
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
