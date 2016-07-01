@@ -36,7 +36,7 @@
 					<section id="class-selection">
 						<article id="subject">
 							<h3>Subject</h3>
-							<paper-dropdown-menu>
+							<paper-dropdown-menu disabled$="[[not(subjects)]]">
 								<paper-listbox class="dropdown-content">
 									<template is="dom-repeat" id="subject-list" items="{{subjects}}" as="subject">
 										<paper-item code="[[subject.code]]" on-tap="subjectSelection">{{subject.description}} ({{subject.code}})</paper-item>
@@ -47,7 +47,7 @@
 
 						<article id="course">
 							<h3>Course</h3>
-							<paper-dropdown-menu>
+							<paper-dropdown-menu disabled$="[[not(courses)]]">
 								<paper-listbox class="dropdown-content">
 									<template is="dom-repeat" id="course-list" items="{{courses}}" as="course">
 										<paper-item code="[[course.courseNumber]]" on-tap="courseSelection">{{course.title}} ([[subjectSelected]]:{{course.courseNumber}})</paper-item>
@@ -58,7 +58,7 @@
 
 						<article id="section">
 							<h3>Section</h3>
-							<paper-dropdown-menu>
+							<paper-dropdown-menu disabled$="[[not(sections)]]">
 								<paper-listbox class="dropdown-content">
 									<template is="dom-repeat" id="section-list" items="{{sections}}" as="sectionNum">
 										<paper-item code="{{sectionNum}}" on-tap="sectionSelection">{{sectionNum}}</paper-item>
@@ -77,7 +77,7 @@
 							</div>
 						</article>
 
-						<paper-fab icon="check" on-tap="reset"></paper-fab>
+						<paper-fab icon="check" on-tap="submit"></paper-fab>
 					</section>
         		</div>
 			</div>
@@ -93,7 +93,7 @@
 			.Red{ color:#d32f2f }
 
 			#Main #Content .fullscreen {
-				position: fixed;
+				
 				top: 0;
 				left: 0;
 				bottom: 0;
@@ -149,59 +149,44 @@
 	<script>
 		var app = document.querySelector("#app");
 
-		app.selected = 0;
-		app.entryAnim = "slide-from-bottom-animation"
-	    app.exitAnim = "slide-up-animation"
+	    app.ternary = function(a,b,c){return a?b:c};
+	    app.not = function(a){return !a};
 
-	    app.goToSelected = function(page){
-	    	if(page > app.selected){
-	    		app.entryAnim = "slide-from-bottom-animation"
-	    		app.exitAnim = "slide-up-animation"	
-	    	}
-			else if(page < app.selected){
-	    		app.entryAnim = "slide-from-top-animation"
-	    		app.exitAnim = "slide-down-animation"
-	    	}
-	    	app.selected = page
-	    }
-
-	    app.ternary = function(a,b,c){return a?b:c}
-
-	    app.subjects = ["Loading..."]
-	    app.courses = ["Loading..."]
-	    app.sections = ["Loading..."]
+	    app.subjects = false;
+	    app.courses = false;
+	    app.sections = false;
 
 	    $.getJSON( "/subjects", function( data ) {
-			app.subjects = data
+			app.subjects = data;
 		});
 
-		app.subjectSelected = -1
-		app.subjectIndex = -1
-		app.courseSelected = -1
-		app.courseIndex = -1
+		app.subjectSelected = -1;
+		app.subjectIndex = -1;
+		app.courseSelected = -1;
+		app.courseIndex = -1;
 		app.subjectSelection = function(e){
-			app.resetCourse()
+			app.resetCourse();
 
 			app.subjectSelected = e["srcElement"].code;
 
 			$.getJSON( "/subject/"+app.subjectSelected, function( data ) {
-				app.courses = data
+				app.courses = data;
 			});
 		}
 		app.courseSelection = function(e){
-			app.resetSection()
+			app.resetSection();
 
-			app.courseSelected = Number(e["srcElement"].code)
+			app.courseSelected = Number(e["srcElement"].code);
 			
 			$.each(app.courses,function(i,v){
 				if(v.courseNumber == app.courseSelected){
-					sections = []
+					sections = [];
 					$.each(app.courses[i].sections,function( _ ,section){
-						sections.push(section.number)
-					})
-					app.sections = sections
+						sections.push(section.number);
+					});
+					app.sections = sections;
 				}
-			})
+			});
 		}
 		app.sectionSelected = -1;
 		app.sectionSelection = function(e){ app.sectionSelected = e["srcElement"].code; }
@@ -210,35 +195,50 @@
 			// $("#subject paper-listbox paper-item")[app.selection]
 			if(app.subjectSelected == -1 || app.courseSelected == -1 || app.sectionSelected == -1){ return undefined }
 			
-			reminders = []
+			reminders = [];
 
 			$.each($("#reminders #checkboxes paper-checkbox"), function( _ , checkbox){
-				if(checkbox.checked){ reminders.push(checkbox.getAttribute("time")) }
-			})
-			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: reminders}
+				if(checkbox.checked){ reminders.push(checkbox.getAttribute("time")) };
+			});
+			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: reminders};
 
 		}
 		
 		app.resetSection = function(){
-			$("#section paper-listbox")[0].selected = undefined
-			app.sectionSelected = -1;
-			app.sections = ["Loading..."]
+			$("#section paper-listbox")[0].selected = undefined;
+			app.sectionSelected = -1;;
+			app.sections = false;
 		}
 
 		app.resetCourse = function(){
-			$("#course paper-listbox")[0].selected = undefined
-			app.courseSelected = -1
-			app.courseIndex = -1
+			$("#course paper-listbox")[0].selected = undefined;
+			app.courseSelected = -1;
+			app.courseIndex = -1;
+			app.courses = false;
 
-			app.resetSection()
+			app.resetSection();
 		}
 
 		app.reset = function(){
-			$("#subject paper-listbox")[0].selected = undefined
-			app.subjectSelected = -1
-			app.subjectIndex = -1
+			$("#subject paper-listbox")[0].selected = undefined;
+			app.subjectSelected = -1;
+			app.subjectIndex = -1;
 
-			app.resetCourse()
+			app.resetCourse();
+		}
+
+		app.submit = function(){
+			var selected = app.getSelected();
+			if( selected == undefined ){
+				alert("Didn't get proper input");
+				return;
+			}
+			// $.post("/demo",JSON.stringify(selected));
+			$.post("/addClass", JSON.stringify(selected), function(data){
+				console.log("Authorized:");
+				console.log(data);
+			});
+
 		}
 
 	</script>

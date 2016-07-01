@@ -1,7 +1,7 @@
 import json
 # import urllib2
 
-development=False
+development=True
 
 if development:
   BUILDING='Buildings.json'
