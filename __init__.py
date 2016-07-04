@@ -112,16 +112,12 @@ def authorize():
       # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
       postInfo=flask.request.json
       print postInfo
-      # print postInfo[0]
-      flask.session['name']=postInfo['id']
       return flask.redirect(flask.url_for('oauth2callback'))
     credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
     if credentials.access_token_expired:
-      # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+      print "credentials expired"
       postInfo=flask.request.json
       print postInfo
-      # print postInfo[0]
-      flask.session['name']=postInfo['id']
       return flask.redirect(flask.url_for('oauth2callback'))
     else:
       print "Credentials located"
