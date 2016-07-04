@@ -198,7 +198,7 @@ def addClass():
 def loggedInDemo():
   if 'credentials' not in flask.session:
     return json.dumps({"loggedIn":False})
-  else if client.OAuth2Credentials.from_json(flask.session['credentials']).access_token_expired:
+  elif client.OAuth2Credentials.from_json(flask.session['credentials']).access_token_expired:
     return json.dumps({"loggedIn":False})
   else:
     return json.dumps({"loggedIn":True})
