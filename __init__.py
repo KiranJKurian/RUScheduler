@@ -194,6 +194,7 @@ def addClass():
     return flask.redirect(flask.url_for('oauth2callbackDemo'))
   else:
     http_auth = credentials.authorize(httplib2.Http())
+    print "Adding Classes now"
     return json.dumps( main.classesDemo(http_auth, data) )
 
 @app.route('/loggedIn/demo', methods=["GET"])
