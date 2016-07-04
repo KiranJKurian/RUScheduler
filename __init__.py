@@ -182,12 +182,13 @@ def addClass():
   # return "Fucker"
 
   if 'credentials' not in flask.session:
+    print "Authorizing..."
     return flask.redirect(flask.url_for('oauth2callbackDemo'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
-    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-    postInfo=flask.request.json
-    return flask.redirect(flask.url_for('oauth2callbackDemo'))
+    print "Credentials expired"
+    flask.session.pop("credentials",None)
+    return "Credentials expired"
   else:
     http_auth = credentials.authorize(httplib2.Http())
     print "Adding Classes now"
@@ -196,6 +197,8 @@ def addClass():
 @app.route('/loggedIn/demo', methods=["GET"])
 def loggedInDemo():
   if 'credentials' not in flask.session:
+    return json.dumps({"loggedIn":False})
+  else if client.OAuth2Credentials.from_json(flask.session['credentials']).access_token_expired:
     return json.dumps({"loggedIn":False})
   else:
     return json.dumps({"loggedIn":True})
