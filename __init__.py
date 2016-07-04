@@ -42,8 +42,9 @@ def index():
         print "Cannot render template"
         return "Error with rendering template"
 
-@app.route('/demo')
-def demo():
+@app.route('/demo', defaults={'hash': ""})
+@app.route('/demo<hash>')
+def demo(hash):
     # flask.session.clear()
     # raise Exception('Testing')
     try:
@@ -131,17 +132,19 @@ def authorize():
 
 @app.route('/authorize/demo', methods=["POST"])
 def authorizeDemo():
+  # print flask.request.form
+  # return "Fucker"
+  postInfo = {"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"]}
   try:
+    flask.session["initData"] = postInfo
     if 'credentials' not in flask.session:
       return flask.redirect(flask.url_for('oauth2callbackDemo'))
     credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
     if credentials.access_token_expired:
-      # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
-      postInfo=flask.request.json
       return flask.redirect(flask.url_for('oauth2callbackDemo'))
     else:
       print "Credentials located"
-      return json.dumps({"success":True, "url":None})
+      return flask.redirect(flask.url_for('demo'))
   except Exception,e:
     print str(e)
     return json.dumps({"success":False})
@@ -151,33 +154,54 @@ def oauth2callbackDemo():
   flow = client.flow_from_clientsecrets(
       CLIENT_SECRETS,
       scope='https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email',
-      redirect_uri=flask.url_for('oauth2callback', _external=True))
+      redirect_uri=flask.url_for('oauth2callbackDemo', _external=True))
   if 'code' not in flask.request.args:
     auth_uri = flow.step1_get_authorize_url()
     # webbrowser.open_new_tab(auth_uri)
-    return json.dumps({"success":True, "url":auth_uri})
+    return flask.redirect(auth_uri)
   else:
     auth_code = flask.request.args.get('code')
     credentials = flow.step2_exchange(auth_code)
     flask.session['credentials'] = credentials.to_json()
-    return flask.redirect(flask.url_for('loggedIn'))
+    
+    http_auth = credentials.authorize(httplib2.Http())
+    result = main.classesDemo(http_auth, flask.session["initData"])
+
+    flask.session.pop("initData",None)
+
+    if result["success"]:
+      return flask.redirect(flask.url_for("demo")+'#'+result["course"].replace(" ","+"))
+    else:
+      return flask.redirect(flask.url_for('demo#BadInput'))
 
 @app.route('/addClass', methods=["POST"])
 def addClass():
   print "Adding Classes..."
-  return "Fucker"
+  data = flask.request.json
+  print "Subject: %s\nCourse: %s\nSection: %s"%(int(data["subject"]),int(data["course"]),data["section"])
+  print "Reminders: ",
+  for reminder in data["reminders"]:
+    print int(reminder),
+  print "\n"
+  # return "Fucker"
+
   if 'credentials' not in flask.session:
-    # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
     return flask.redirect(flask.url_for('oauth2callbackDemo'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
     # webbrowser.open_new_tab(flask.url_for('oauth2callback'))
+    postInfo=flask.request.json
     return flask.redirect(flask.url_for('oauth2callbackDemo'))
   else:
     http_auth = credentials.authorize(httplib2.Http())
-    # service = discovery.build('calendar', 'v3', http_auth)
-    return main.classes(http_auth,json.dumps(flask.request.json))
+    return json.dumps( main.classesDemo(http_auth, data) )
 
+@app.route('/loggedIn/demo', methods=["GET"])
+def loggedInDemo():
+  if 'credentials' not in flask.session:
+    return json.dumps({"loggedIn":False})
+  else:
+    return json.dumps({"loggedIn":True})
 
 @app.route('/magic', methods=["POST"])
 def magic():

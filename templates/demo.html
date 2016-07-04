@@ -11,8 +11,17 @@
     <link href="{{{ url_for('static', filename='bower_components/paper-dropdown-menu/paper-dropdown-menu.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-listbox/paper-listbox.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-item/paper-item.html') }}}" rel="import">
+    
     <link href="{{{ url_for('static', filename='bower_components/paper-checkbox/paper-checkbox.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-button/paper-button.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/iron-icons/iron-icons.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/iron-form/iron-form.html') }}}" rel="import">
+    
+<!--     <link href="{{{ url_for('static', filename='bower_components/paper-dialog/paper-dialog.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/neon-animation/animations/scale-up-animation.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/neon-animation/animations/fade-out-animation.html') }}}" rel="import">
+ -->
+    <link href="{{{ url_for('static', filename='bower_components/paper-toast/paper-toast.html') }}}" rel="import">
 
 	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="{{{ url_for('static', filename='bower_components/iron-media-query/iron-media-query.html') }}}" rel="import">
@@ -25,13 +34,19 @@
 	<template id="app" is="dom-bind">
 		
 
-		<div id="Main" micro$="[[microView]]" mini$="[[miniView]]" small$="[[smallView]]">
+		<div id="Main" micro$="[[microView]]" mini$="[[miniView]]" small$="[[smallView]]" full$="[[not(smallView)]]">
 			<div id="Content">
         		<div id="intro" class="fullscreen fit layout vertical center-center">
         			<section id="header">
         				<h1 id="title"><span class="Red">RU</span>Scheduler</h1>
         				<h2 id="subtitle">Class Meets Google Calendar</h2>
         			</section>
+
+        			<!-- <paper-dialog entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+						<h2>Add Another Class</h2>
+						<paper-button toggles>Yes</paper-button>
+						<paper-button toggles>No</paper-button>
+					</paper-dialog> -->
 
 					<section id="class-selection">
 						<article id="subject">
@@ -79,6 +94,10 @@
 
 						<paper-fab icon="check" on-tap="submit"></paper-fab>
 					</section>
+
+					<paper-toast id="added" text="Successfully Added: "><span class="Red">[[Class]]</span></paper-toast>
+					<paper-toast id="error" text="Error: "><span class="Red">Bad Input</span></paper-toast>
+
         		</div>
 			</div>
 		</div>
@@ -142,6 +161,13 @@
 				margin: 1em;
 			}
 
+			/*#Main #Content paper-dialog {
+				background-color: var(--paper-grey-700);
+				color: white;
+			}
+
+			#Main[full] #Content paper-dialog h2{ margin:2em; }*/
+
 
 		</style>
 	</template>
@@ -156,6 +182,8 @@
 	    app.courses = false;
 	    app.sections = false;
 
+	    app.Class = "Intro to Comp Sci"
+
 	    $.getJSON( "/subjects", function( data ) {
 			app.subjects = data;
 		});
@@ -164,6 +192,7 @@
 		app.subjectIndex = -1;
 		app.courseSelected = -1;
 		app.courseIndex = -1;
+
 		app.subjectSelection = function(e){
 			app.resetCourse();
 
@@ -180,6 +209,7 @@
 			
 			$.each(app.courses,function(i,v){
 				if(v.courseNumber == app.courseSelected){
+					app.Class = v.title;
 					sections = [];
 					$.each(app.courses[i].sections,function( _ ,section){
 						sections.push(section.number);
@@ -227,19 +257,82 @@
 			app.resetCourse();
 		}
 
+		app.loggedIn = function(){
+			$.get("/loggedIn/demo", function(data){
+				console.log(data);
+				stuff = JSON.parse(data)
+			});
+		}
+
+
+
+		// jquery extend function
+		$.extend(
+		{
+		    redirectPost: function(location, args)
+		    {
+		        var form = '';
+		        $.each( args, function( key, value ) {
+		            form += '<input type="hidden" name="'+key+'" value="'+value+'">';
+		        });
+		        $('<form action="'+location+'" method="POST">'+form+'</form>').appendTo('body').submit();
+		    }
+		});
+
+
 		app.submit = function(){
 			var selected = app.getSelected();
 			if( selected == undefined ){
 				alert("Didn't get proper input");
 				return;
 			}
-			// $.post("/demo",JSON.stringify(selected));
-			$.post("/addClass", JSON.stringify(selected), function(data){
-				console.log("Authorized:");
+
+			$.get("/loggedIn/demo", function(data){
 				console.log(data);
+				data = JSON.parse(data)
+				if(data.loggedIn){
+					$.ajax({
+						type: "POST",
+						url: "/addClass",
+						data: JSON.stringify(selected),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						success: function(data){
+							console.log("Sent:")
+							console.log(JSON.stringify(selected))
+							console.log(selected)
+							console.log("Authorized:");
+							console.log(data);
+							if(data.error == "Bad Input"){
+								$("#error")[0].open();
+							}
+							else{
+								$("#added")[0].open();
+								app.reset()
+							}
+						}
+					});
+				}
+				else{
+					var redirect = '/authorize/demo';
+					$.redirectPost(redirect, selected);
+				}
 			});
 
 		}
+
+		window.addEventListener('WebComponentsReady', function(e) {
+
+			if(location.hash){
+				if(location.hash == "#BadInput"){ $("#error")[0].open() }
+				else{
+					app.Class = location.hash.substring(1).split("+").join(" ")
+					$("#added")[0].open();
+				}
+				location.hash = "";
+			}
+			
+		});
 
 	</script>
 

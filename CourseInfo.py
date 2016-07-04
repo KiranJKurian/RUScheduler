@@ -67,7 +67,7 @@ def courseInfo(subNum,courseNum,sectionNum,school):
                             meeting['location']={'building':loc,'room':meetingTimes['roomNumber'],'campus':meetingTimes['campusAbbrev']}
                         info['meetingDays'].append(meeting)
                     if info['meetingDays']:
-                        return json.dumps(info)
+                        return info
 
             return None
     return None

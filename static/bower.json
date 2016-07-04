@@ -30,7 +30,7 @@
     "iron-media-query": "PolymerElements/iron-media-query#^1.0.8",
     "paper-card": "PolymerElements/paper-card#^1.1.1",
     "neon-animation": "PolymerElements/neon-animation#^1.2.3",
-    "paper-button": "PolymerElements/paper-button#^1.0.11",
+    "paper-button": "PolymerElements/paper-button#^1.0.12",
     "polymer-font-awesome-icons": "fontawesome-iconset#^4.2.0-b2",
     "fontawesome-iconset": "diego-d5000/fontawesome-iconset#~4.3.0",
     "paper-styles": "PolymerElements/paper-styles#^1.1.4",
@@ -39,7 +39,10 @@
     "paper-listbox": "polymerelements/paper-listbox#^1.1.2",
     "paper-item": "PolymerElements/paper-item#^1.2.1",
     "iron-ajax": "PolymerElements/iron-ajax#^1.2.0",
-    "paper-checkbox": "PolymerElements/paper-checkbox#^1.2.1"
+    "paper-checkbox": "PolymerElements/paper-checkbox#^1.2.1",
+    "paper-dialog": "PolymerElements/paper-dialog#^1.0.4",
+    "paper-toast": "PolymerElements/paper-toast#^1.3.0",
+    "iron-form": "PolymerElements/iron-form#^1.0.16"
   },
   "resolutions": {
     "polymer": "1.4.0",
