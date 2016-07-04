@@ -17,11 +17,8 @@
     <link href="{{{ url_for('static', filename='bower_components/iron-icons/iron-icons.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/iron-form/iron-form.html') }}}" rel="import">
     
-<!--     <link href="{{{ url_for('static', filename='bower_components/paper-dialog/paper-dialog.html') }}}" rel="import">
-    <link href="{{{ url_for('static', filename='bower_components/neon-animation/animations/scale-up-animation.html') }}}" rel="import">
-    <link href="{{{ url_for('static', filename='bower_components/neon-animation/animations/fade-out-animation.html') }}}" rel="import">
- -->
     <link href="{{{ url_for('static', filename='bower_components/paper-toast/paper-toast.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-spinner/paper-spinner.html') }}}" rel="import">
 
 	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="{{{ url_for('static', filename='bower_components/iron-media-query/iron-media-query.html') }}}" rel="import">
@@ -42,12 +39,6 @@
         				<h2 id="subtitle">Class Meets Google Calendar</h2>
         			</section>
 
-        			<!-- <paper-dialog entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-						<h2>Add Another Class</h2>
-						<paper-button toggles>Yes</paper-button>
-						<paper-button toggles>No</paper-button>
-					</paper-dialog> -->
-
 					<section id="class-selection">
 						<article id="subject">
 							<h3>Subject</h3>
@@ -58,6 +49,7 @@
 									</template>
 								</paper-listbox>
 							</paper-dropdown-menu>
+							<paper-spinner id="subLoad" active></paper-spinner>
 						</article>
 
 						<article id="course">
@@ -69,6 +61,7 @@
 									</template>
 								</paper-listbox>
 							</paper-dropdown-menu>
+							<paper-spinner id="courseLoad" active$="[[courseLoad]]"></paper-spinner>
 						</article>
 
 						<article id="section">
@@ -80,6 +73,7 @@
 									</template>
 								</paper-listbox>
 							</paper-dropdown-menu>
+							<paper-spinner id="sectionLoad"></paper-spinner>
 						</article>
 
 						<article id="reminders">
@@ -92,7 +86,7 @@
 							</div>
 						</article>
 
-						<paper-fab icon="check" on-tap="submit"></paper-fab>
+						<paper-fab icon="check" on-tap="submit" disabled$="[[not(submitable)]]" active$="[[submitable]]"></paper-fab>
 					</section>
 
 					<paper-toast id="added" text="Successfully Added: "><span class="Red">[[Class]]</span></paper-toast>
@@ -131,10 +125,8 @@
 			#Main[mini] #Content #title { font-size: 3em }
 
 			#Main #Content #class-selection paper-dropdown-menu{
-				width: 85vw;
+				width: 75vw;
 				max-width: 30em;
-			}
-			#Main #Content #class-selection paper-dropdown-menu {
 				--paper-input-container-input: {
 					color: white;
 				}
@@ -149,7 +141,8 @@
 			}
 
 			#Main #Content #class-selection h3{ margin-bottom: 0; text-align: left; text-transform: uppercase; }
-			#Main #Content #class-selection paper-fab{ float:right; margin: .5em 0 .5em 0; background-color: #d32f2f }
+			#Main #Content #class-selection paper-fab{ float:right; margin: .5em 0 .5em 0; }
+			#Main #Content #class-selection paper-fab[active]{ background-color: #d32f2f }
 
 			#Main #Content #reminders #checkboxes paper-checkbox {
 				--paper-checkbox-checked-color: #d32f2f;
@@ -161,13 +154,6 @@
 				margin: 1em;
 			}
 
-			/*#Main #Content paper-dialog {
-				background-color: var(--paper-grey-700);
-				color: white;
-			}
-
-			#Main[full] #Content paper-dialog h2{ margin:2em; }*/
-
 
 		</style>
 	</template>
@@ -177,20 +163,25 @@
 
 	    app.ternary = function(a,b,c){return a?b:c};
 	    app.not = function(a){return !a};
+	    // app.exists = function(a){return !!a};
 
 	    app.subjects = false;
 	    app.courses = false;
 	    app.sections = false;
+	    app.courseLoads = false;
+
+	    app.submitable = false;
 
 	    app.Class = "Intro to Comp Sci"
 
 	    $.getJSON( "/subjects", function( data ) {
 			app.subjects = data;
+			$("#subLoad")[0].active = false;
 		});
 
 		app.subjectSelected = -1;
 		app.subjectIndex = -1;
-		app.courseSelected = -1;
+		app.courseSelected = 0;
 		app.courseIndex = -1;
 
 		app.subjectSelection = function(e){
@@ -198,8 +189,11 @@
 
 			app.subjectSelected = e["srcElement"].code;
 
+			app.courseLoad = true;
+
 			$.getJSON( "/subject/"+app.subjectSelected, function( data ) {
 				app.courses = data;
+				app.courseLoad = false;
 			});
 		}
 		app.courseSelection = function(e){
@@ -219,7 +213,7 @@
 			});
 		}
 		app.sectionSelected = -1;
-		app.sectionSelection = function(e){ app.sectionSelected = e["srcElement"].code; }
+		app.sectionSelection = function(e){ app.sectionSelected = e["srcElement"].code; app.submitable = true; }
 
 		app.getSelected = function(){
 			// $("#subject paper-listbox paper-item")[app.selection]
@@ -238,6 +232,7 @@
 			$("#section paper-listbox")[0].selected = undefined;
 			app.sectionSelected = -1;;
 			app.sections = false;
+			app.submitable = false;
 		}
 
 		app.resetCourse = function(){
@@ -281,7 +276,10 @@
 
 
 		app.submit = function(){
+			app.submitable = false;
+			
 			var selected = app.getSelected();
+
 			if( selected == undefined ){
 				alert("Didn't get proper input");
 				return;

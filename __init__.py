@@ -24,7 +24,7 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__, static_url_path='')
 
-development=False
+development = False
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
@@ -32,7 +32,7 @@ else:
   CLIENT_SECRETS='/var/www/RUScheduler/client_secrets.json'
 
 
-@app.route('/')
+@app.route('/old')
 def index():
     # flask.session.clear()
     # raise Exception('Testing')
@@ -42,8 +42,8 @@ def index():
         print "Cannot render template"
         return "Error with rendering template"
 
-@app.route('/demo', defaults={'hash': ""})
-@app.route('/demo<hash>')
+@app.route('/', defaults={'hash': ""})
+@app.route('/<hash>')
 def demo(hash):
     # flask.session.clear()
     # raise Exception('Testing')
