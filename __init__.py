@@ -1,6 +1,7 @@
 import json
 import urllib2
 import os
+import os.path
 
 import flask
 
@@ -24,7 +25,7 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__, static_url_path='')
 
-development = False
+development = not os.path.isfile("prod.txt")
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
@@ -44,11 +45,35 @@ def index():
 
 @app.route('/', defaults={'hash': ""})
 @app.route('/<hash>')
-def demo(hash):
+@app.route('/NB', defaults={'hash': ""})
+@app.route('/NB/<hash>')
+def demoNB(hash):
     # flask.session.clear()
     # raise Exception('Testing')
     try:
-        return render_template('demo.html')
+        return render_template('demo.html',campus="NB")
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
+@app.route('/NK', defaults={'hash': ""})
+@app.route('/NK/<hash>')
+def demoNK(hash):
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('demo.html',campus="NK")
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+
+@app.route('/CM', defaults={'hash': ""})
+@app.route('/CM/<hash>')
+def demoCM(hash):
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('demo.html',campus="CM")
     except:
         print "Cannot render template"
         return "Error with rendering template"
@@ -61,18 +86,20 @@ def demo(hash):
 # def load_data(fileName):
 #     return send_from_directory(os.path.join(os.path.dirname(os.getcwd()),"data"), fileName)
 
-@app.route("/subject/<subject>")
-def subjectJSON(subject):
+@app.route("/subject/<subject>", defaults={'campus': "NB"})
+@app.route("/subject/<subject>/<campus>")
+def subjectJSON(subject,campus):
   try:
-    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=92016&subject=%s&campus=NB&level=UG"%subject).read()
+    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=92016&subject=%s&campus=%s&level=UG"%(subject,campus)).read()
   except:
     return app.send_static_file('static/data/Courses/%s.json'%subject)
 
-@app.route("/subjects")
-def subjectsJSON():
+@app.route('/subjects', defaults={'campus': "NB"})
+@app.route('/subjects/<campus>')
+def subjectsJSON(campus):
   try:
     print "Getting subjects..."
-    return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=92016&campus=NB&level=U").read()
+    return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=92016&campus=%s&level=U"%campus).read()
   except:
     return app.send_static_file('static/data/subjects.json')
 
@@ -130,7 +157,7 @@ def authorize():
 def authorizeDemo():
   # print flask.request.form
   # return "Fucker"
-  postInfo = {"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"]}
+  postInfo = {"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
   try:
     flask.session["initData"] = postInfo
     if 'credentials' not in flask.session:
@@ -140,7 +167,7 @@ def authorizeDemo():
       return flask.redirect(flask.url_for('oauth2callbackDemo'))
     else:
       print "Credentials located"
-      return flask.redirect(flask.url_for('demo'))
+      return flask.redirect(flask.url_for('demo'+postInfo['campus']))
   except Exception,e:
     print str(e)
     return json.dumps({"success":False})
@@ -163,12 +190,14 @@ def oauth2callbackDemo():
     http_auth = credentials.authorize(httplib2.Http())
     result = main.classesDemo(http_auth, flask.session["initData"])
 
+    campus = flask.session["initData"]["campus"][::]
+
     flask.session.pop("initData",None)
 
-    if result["success"]:
-      return flask.redirect(flask.url_for("demo")+'#'+result["course"].replace(" ","+"))
+    if "success" in result:
+      return flask.redirect(flask.url_for("demo"+campus)+'#'+result["course"].replace(" ","+"))
     else:
-      return flask.redirect(flask.url_for('demo#BadInput'))
+      return flask.redirect(flask.url_for('demo'+campus)+"#BadInput")
 
 @app.route('/addClass', methods=["POST"])
 def addClass():

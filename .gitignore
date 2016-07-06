@@ -2,6 +2,7 @@
 client_secrets.json
 .DS_Store
 bower_components
+prod.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

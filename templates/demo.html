@@ -174,10 +174,7 @@
 
 	    app.Class = "Intro to Comp Sci"
 
-	    $.getJSON( "/subjects", function( data ) {
-			app.subjects = data;
-			$("#subLoad")[0].active = false;
-		});
+	    campus = "{{{ campus }}}";
 
 		app.subjectSelected = -1;
 		app.subjectIndex = -1;
@@ -191,7 +188,7 @@
 
 			app.courseLoad = true;
 
-			$.getJSON( "/subject/"+app.subjectSelected, function( data ) {
+			$.getJSON( "/subject/"+app.subjectSelected+"/"+campus, function( data ) {
 				app.courses = data;
 				app.courseLoad = false;
 			});
@@ -224,7 +221,7 @@
 			$.each($("#reminders #checkboxes paper-checkbox"), function( _ , checkbox){
 				if(checkbox.checked){ reminders.push(checkbox.getAttribute("time")) };
 			});
-			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: reminders};
+			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: reminders, campus: campus};
 
 		}
 		
@@ -321,6 +318,12 @@
 
 		window.addEventListener('WebComponentsReady', function(e) {
 
+
+			$.getJSON( "/subjects/"+campus, function( data ) {
+				app.subjects = data;
+				$("#subLoad")[0].active = false;
+			});
+			
 			if(location.hash){
 				if(location.hash == "#BadInput"){ $("#error")[0].open() }
 				else{

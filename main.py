@@ -31,6 +31,10 @@ def classes(http_auth, inputJSON):
 	
 	school=inputDict['school']
 	reminders=inputDict['reminders']
+	
+	print "Reminders:"
+	print reminders
+
 	for classInfo in inputDict['classInfo']:
 		subNum=classInfo['subNum']
 		courseNum=classInfo['courseNum']
@@ -155,11 +159,19 @@ def classesDemo(http_auth, inputDict):
 	name =	people_document['displayName']
 	email = people_document['emails'][0]['value']
 
-	school="NB"
+	if "campus" in inputDict:
+		school = inputDict["campus"]
+	else:
+		school = "NB"
+
 	subject = inputDict["subject"]
 	course = inputDict["course"]
 	section = inputDict["section"]
-	reminders = inputDict["reminders"]
+	
+	try:
+		reminders = [int(s) for s in inputDict["reminders"].split(',')]
+	except:
+		reminders = inputDict["reminders"]
 	
 	cInfo=courseInfo(subject, course, section, school)
 	print cInfo
