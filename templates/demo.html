@@ -106,7 +106,7 @@
 			.Red{ color:#d32f2f }
 
 			#Main #Content .fullscreen {
-				
+				height: 100%;
 				top: 0;
 				left: 0;
 				bottom: 0;
@@ -115,7 +115,7 @@
 			}
 
 			#Main #Content #intro{background-color:var(--paper-grey-800); padding:1em; }
-			#Main[micro] #Content #intro{ padding-top: 10em}
+			#Main[micro] #Content #intro{ display: block }
 
 			#Main #Content #classPage{ background-color: blue }
 
@@ -323,7 +323,7 @@
 				app.subjects = data;
 				$("#subLoad")[0].active = false;
 			});
-			
+
 			if(location.hash){
 				if(location.hash == "#BadInput"){ $("#error")[0].open() }
 				else{
