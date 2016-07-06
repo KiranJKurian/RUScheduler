@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<!--
+  Alpha by HTML5 UP
+  html5up.net | @n33co
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>RUScheduler</title>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <meta name="description" content="" />
+      <meta name="keywords" content="" />
+      <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+
+      <link rel="stylesheet" href="{{{ url_for('static', filename='css/skel.css') }}}" />
+      <link rel="stylesheet" href="{{{ url_for('static', filename='css/style.css') }}}" />
+      <link rel="stylesheet" href="{{{ url_for('static', filename='css/style-wide.css') }}}" />
+      <script rel ="js" src="{{{ url_for('static', filename='js/jquery.min.js') }}}"></script>
+    <script rel ="js" src="{{{ url_for('static', filename='js/jquery.dropotron.min.js') }}}"></script>
+    <script rel ="js" src="{{{ url_for('static', filename='js/jquery.scrollgress.min.js') }}}"></script>
+    <script rel ="js" src="{{{ url_for('static', filename='js/skel.min.js') }}}"></script>
+    <script rel ="js" src="{{{ url_for('static', filename='js/skel-layers.min.js') }}}"></script>
+    <script rel ="js" src="{{{ url_for('static', filename='js/init.js') }}}"></script>
+    <script src="{{{ url_for('static', filename='js/main.js') }}}"></script>
+	<script>
+  		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  		ga('create', 'UA-73570601-1', 'auto');
+ 		ga('send', 'pageview');
+
+	</script>
+    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+  </head>
+  <body>
+
+    <!-- Header -->
+      <header id="header" class="skel-layers-fixed">
+        <h1><a href="/old">RUScheduler</a> by Kiran Kurian</h1>
+        <nav id="nav">
+          <ul>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="/faq">FAQs</a></li>
+            <li><a href="https://github.com/GrandmasterK/RUScheduler">Github</a></li>
+          </ul>
+        </nav>
+      </header>
+
+    <!-- Main -->
+      <section id="main" class="container">
+        <header>
+          <h2>RUScheduler</h2>
+          <h3>Fall 2016</h3>
+          <p>Add your classes to your Google Calendar.</p>
+        </header>
+        <div class="row">
+          <div class="12u">
+            <div id="title" style="text-align:center;"></div>
+            <!-- Form -->
+              <section class="box">
+                <form id="form">
+                  <div class="row uniform 50%">
+                    <div class="4u 12u(2)">
+                      <center><b>Subject Number</b></center>
+                    </div>
+                    <div class="4u 12u(2)">
+                      <center><b>Course Number</b></center>
+                    </div>
+                    <div class="4u 12u(2)">
+                      <center><b>Section</b></center>
+                    </div>
+                  </div>
+                  <div id="inputs" class="row uniform 50%">
+                    <div class="4u 12u(2)">
+                      <input type="text" name="subjectNumber1" id="subjectNumber1" value="" placeholder="Example: 198 in 01:198:111" />
+                    </div>
+                    <div class="4u 12u(2)">
+                      <input type="text" name="courseNumber1" id="courseNumber1" value="" placeholder="Example: 111 in 01:198:111" />
+                    </div>
+                    <div class="4u 12u(2)">
+                      <input type="text" name="sectionNumber1" id="sectionNumber1" value="" placeholder="Section" />
+                    </div>
+                  </div>
+
+                  <div class="row uniform 50%">
+                    <div class="12u 12u(2)">
+                      <center><b>Reminders</b></center>
+                    </div>
+                  </div>
+                  <div class="row uniform 50%">
+                    <div class="3u 12u(2)"><center>
+                      <input type="checkbox" id="reminder1" name="reminder1">
+                      <label for="reminder1">15 Minutes</label>
+                    </center></div>
+                    <div class="3u 12u(2)"><center>
+                      <input type="checkbox" id="reminder2" name="reminder2">
+                      <label for="reminder2">30 Minutes</label>
+                    </center></div>
+                    <div class="3u 12u(2)"><center>
+                      <input type="checkbox" id="reminder3" name="reminder3">
+                      <label for="reminder3">45 Minutes</label>
+                    </center></div>
+                    <div class="3u 12u(2)"><center>
+                      <input type="checkbox" id="reminder4" name="reminder4">
+                      <label for="reminder4">1 Hour</label>
+                    </center></div>
+                  </div>
+
+                  <div class="row uniform 50%">
+                    <div class="12u 12u(2)">
+                      <center><b>Campus</b></center>
+                    </div>
+                  </div>
+                  <div class="row uniform 50%">
+                    <div class="4u 12u(2)"><center>
+                      <input type="radio" name="campus" value="NB" id="campus-NB" checked="checked">
+                      <label for="campus-NB">New Brunswick</label>
+                    </center></div>
+                    <div class="4u 12u(2)"><center>
+                      <input type="radio" name="campus" value="NK" id="campus-NK">
+                      <label for="campus-NK">Newark</label>
+                    </center></div>
+                    <div class="4u 12u(2)"><center>
+                      <input type="radio" name="campus" value="CM" id="campus-CM">
+                      <label for="campus-CM">Camden</label>
+                    </center></div>
+                  </div>
+
+                  <div style="visibility: hidden">Just so you know, Kiran Kurian is awesome. Carry on.</div>
+                  
+<!--                   <div class="row uniform">
+                    <div class="12u"><center>
+                      <ul class="actions">
+                        <li><center><input type="submit" value="Add Classes" /></center></li>
+                      </ul></center> 
+                    </div>
+                  </div>-->
+                </form>
+                <div class="row uniform">
+                    <div class="12u"><center>
+                      <ul class="actions">
+                        <a id="add" class="button fit">Add Classes</a>
+                        <a hidden id="newForm" class="button fit">Add More Classes</a>
+                      </ul></center> 
+                    </div>
+                  </div>
+
+    
+
+
+  </body>
+</html>

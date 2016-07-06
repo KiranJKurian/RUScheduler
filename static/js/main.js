@@ -33,7 +33,7 @@ function authorize(){
   $.ajax({
     type: "POST",
     contentType: "application/json; charset=utf-8",
-    url: "/authorize",
+    url: "/authorize/old",
     success: function (data) {
       console.log("Authorizing");
       $('#title').html('<h3>Authorizing...</h3><h4>P.S. You will need to allow this popup to authorize you.</h4>');
