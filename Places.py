@@ -1,8 +1,8 @@
 import json
-import os.path
+import os
 # import urllib2
 
-development = not os.path.isfile("prod.txt")
+development = os.uname()[1] != "ruscheduler"
 
 if development:
   BUILDING='Buildings.json'

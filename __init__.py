@@ -1,7 +1,6 @@
 import json
 import urllib2
 import os
-import os.path
 
 import flask
 
@@ -25,7 +24,7 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__, static_url_path='')
 
-development = not os.path.isfile("prod.txt")
+development = os.uname()[1] != "ruscheduler"
 
 if development:
   CLIENT_SECRETS='client_secrets.json'
