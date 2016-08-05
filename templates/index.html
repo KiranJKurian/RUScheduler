@@ -90,9 +90,9 @@
 					</section>
 
 					<paper-toast id="added" text="Successfully Added: "><span class="Red">[[Class]]</span></paper-toast>
-					<paper-toast id="error" text="Error: "><span class="Red">Bad Input</span></paper-toast>
+					<paper-toast id="error" text="Error: "><span class="Red">Bad Input</span> No Times Found</paper-toast>
         			
-        			<article hidden$="[[miniView]]" id ="credit">Created by <span class="Red">Kiran Kurian</span></article>
+        			<article hidden$="[[miniView]]" id ="credit">Created by <span class="Red"><a href="https://github.com/KiranJKurian/RUScheduler">Kiran Kurian</a></span></article>
 
         		</div>
 			</div>
@@ -112,6 +112,10 @@
 				left:0;
 				margin:1em;
 				position: fixed;
+			}
+
+			#Main #Content #credit a{
+				text-decoration: none;
 			}
 
 			#Main #Content .fullscreen {
