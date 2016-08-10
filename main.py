@@ -61,6 +61,8 @@ def classes(http_auth, inputDict):
 	        startDate="2016-09-08"
 	    elif day=="friday" or day=="f":
 	        startDate="2016-09-09"
+	    elif day=="saturday" or day=="s":
+	        startDate="2016-09-10"
 	    else:
 	        print "Invalid meetingDay"
 	        return {"error":"Bad Input"}
