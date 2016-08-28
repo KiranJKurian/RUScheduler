@@ -34,12 +34,12 @@ def classes(http_auth, inputDict):
 	subject = inputDict["subject"]
 	course = inputDict["course"]
 	section = inputDict["section"]
-	
+
 	try:
 		reminders = [int(s) for s in inputDict["reminders"].split(',')]
 	except:
 		reminders = inputDict["reminders"]
-	
+
 	cInfo=courseInfo(subject, course, section, school)
 	print cInfo
 
@@ -79,9 +79,9 @@ def classes(http_auth, inputDict):
 	      color="5"
 	    elif (meetingDay["location"]['campus']).upper()=="D/C":
 	      color="10"
-	    else: 
+	    else:
 	      color="11"
-	  
+
 	    event = {
 		    "location": "%s"%(location),
 		     "end": {
@@ -127,8 +127,11 @@ def classes(http_auth, inputDict):
 	    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
 
 	# db.scheduler.remove()
-	db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
-	print "Added to DB"
+	try:
+		db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
+		print "Added to DB"
+	except:
+		print "DB down"
 	return {"success":True,"course": summary}
 
 #Version 2.0 - Depreciated
@@ -145,17 +148,17 @@ def classesOld(http_auth, inputJSON):
 	returnDict["email"]= people_document['emails'][0]['value']
 
 	inputDict=json.loads(inputJSON)
-	
+
 	school=inputDict['school']
 	reminders=inputDict['reminders']
-	
+
 	print "Reminders:"
 	print reminders
 
 	for classInfo in inputDict['classInfo']:
 		subNum=classInfo['subNum']
 		courseNum=classInfo['courseNum']
-		sectionNum=classInfo['sectionNum']	
+		sectionNum=classInfo['sectionNum']
 
 		cInfo=courseInfo(subNum,courseNum,sectionNum,school)
 		print cInfo
@@ -194,9 +197,9 @@ def classesOld(http_auth, inputJSON):
 		      color="5"
 		    elif (meetingDay["location"]['campus']).upper()=="D/C":
 		      color="10"
-		    else: 
+		    else:
 		      color="11"
-		  
+
 		    event = {
 		    "location": "%s"%(location),
 		     "end": {
@@ -255,13 +258,16 @@ def classesOld(http_auth, inputJSON):
 		    	if (instanceStart>=parse("2016-11-24") and instanceStart<=parse("2016-11-27")) or (instanceStart>=parse("2016-11-22") and instanceStart<=parse("2016-11-24")):
 		    		instance['status'] = 'cancelled'
 		    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
-		    	
+
 		returnDict["success"].append(summary)
 
 	print returnDict
 	# db.scheduler.remove()
-	db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
-	print "Added to DB"
+	try:
+		db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
+		print "Added to DB"
+	except:
+		print "DB down"
 	return json.dumps(returnDict)
 
 # if __name__ == '__main__':
