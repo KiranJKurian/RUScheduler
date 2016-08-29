@@ -16,7 +16,7 @@ client = MongoClient(port=27106)
 db=client.fall16
 
 # Version 3.0
-def classes(http_auth, inputDict):
+def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
 	service = discovery.build('calendar', 'v3', http_auth)
 	SERVICE = discovery.build('plus', 'v1', http_auth)
 
@@ -47,7 +47,7 @@ def classes(http_auth, inputDict):
 		print "Error: Semester/Subject/School/Course/Section not found or Invalid/Empty/Non-existant startTime/endTime/meetingDay"
 		return {"error":"Bad Input"}
 
-	summary=cInfo["title"]
+	summary = "%s%s%s" % (preText, cInfo["title"], postText)
 
 	for meetingDay in cInfo['meetingDays']:
 	    day="%s"%(meetingDay['day']).lower()
@@ -111,11 +111,11 @@ def classes(http_auth, inputDict):
 			})
 		print "Created the event"
 
-	    recurring_event = service.events().insert(calendarId='primary', body=event).execute()
+	    recurring_event = service.events().insert(calendarId=calendarId, body=event).execute()
 	    eventID=recurring_event.get("id")
 	    print "success"
 
-	    instances = service.events().instances(calendarId='primary', eventId="%s"%eventID,timeMin=parse("2016-09-6").isoformat()+'Z',timeMax=parse("2016-12-15").isoformat()+'Z').execute()['items']
+	    instances = service.events().instances(calendarId=calendarId, eventId="%s"%eventID,timeMin=parse("2016-09-6").isoformat()+'Z',timeMax=parse("2016-12-15").isoformat()+'Z').execute()['items']
 	    for instance in instances:
 	    	if instance['start'].has_key("dateTime"):
 	    		instanceStart= parse(instance['start']['dateTime']).replace(tzinfo=None)
@@ -124,7 +124,7 @@ def classes(http_auth, inputDict):
 	    	# Exclusion for Thanksgiving
 	    	if (instanceStart>=parse("2016-11-24") and instanceStart<=parse("2016-11-27")) or (instanceStart>=parse("2016-11-22") and instanceStart<=parse("2016-11-24")):
 	    		instance['status'] = 'cancelled'
-	    		service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
+	    		service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
 	# db.scheduler.remove()
 	try:
@@ -269,6 +269,16 @@ def classesOld(http_auth, inputJSON):
 	except:
 		print "DB down"
 	return json.dumps(returnDict)
+
+def brotherClasses(http_auth, inputDict):
+	service = discovery.build('calendar', 'v3', http_auth)
+	calendar_list = service.calendarList().list().execute()
+	correctCal = any(item['id'] == '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com' for item in calendar_list['items'])
+	if correctCal:
+		return classes(http_auth, inputDict, calendarId = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com', preText = "%s - "%inputDict['name'])
+	else:
+		print "No Calendar Found"
+		return {"error":"No Calendar"}
 
 # if __name__ == '__main__':
 #     inputDict={"classInfo":[{"subNum":"190","courseNum":"206","sectionNum":"1"}],"school":"NB","reminders":[True,True,True,False]}
