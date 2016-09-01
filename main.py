@@ -12,7 +12,7 @@ from pymongo import MongoClient
 from dateutil.parser import *
 import datetime
 
-client = MongoClient(port=27107)
+client = MongoClient(port=27017)
 db=client.fall16
 
 # Version 3.0
