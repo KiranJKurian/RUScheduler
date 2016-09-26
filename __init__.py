@@ -335,6 +335,86 @@ def addClassBrother():
     print "Adding Classes now"
     return json.dumps( main.brotherClasses(http_auth, data) )
 
+# New Member
+@app.route('/newMember', defaults={'hash': ""})
+@app.route('/newMember/<hash>')
+def newMember(hash):
+    # flask.session.clear()
+    # raise Exception('Testing')
+    try:
+        return render_template('newMember.html',campus="NB")
+    except:
+        print "Cannot render template"
+        return "Error with rendering template"
+@app.route('/authorize/newMember', methods=["POST"])
+def authorizeNewMember():
+  # print flask.request.form
+  # return "Fucker"
+  postInfo = {"name":flask.request.form["name"],"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
+  try:
+    flask.session["initData"] = postInfo
+    if 'credentials' not in flask.session:
+      return flask.redirect(flask.url_for('oauth2callbackNewMember'))
+    credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
+    if credentials.access_token_expired:
+      return flask.redirect(flask.url_for('oauth2callbackNewMember'))
+    else:
+      print "Credentials located"
+      return flask.redirect(flask.url_for('newMember'))
+  except Exception,e:
+    print str(e)
+    return json.dumps({"success":False})
+@app.route('/oauth2callback/newMember', methods=["GET"])
+def oauth2callbackNewMember():
+  flow = client.flow_from_clientsecrets(
+      CLIENT_SECRETS,
+      scope='https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email',
+      redirect_uri=flask.url_for('oauth2callbackNewMember', _external=True))
+  if 'code' not in flask.request.args:
+    auth_uri = flow.step1_get_authorize_url()
+    # webbrowser.open_new_tab(auth_uri)
+    return flask.redirect(auth_uri)
+  else:
+    auth_code = flask.request.args.get('code')
+    credentials = flow.step2_exchange(auth_code)
+    flask.session['credentials'] = credentials.to_json()
+
+    http_auth = credentials.authorize(httplib2.Http())
+    result = main.newMemberClasses(http_auth, flask.session["initData"])
+
+    flask.session.pop("initData",None)
+
+    if "success" in result:
+      return flask.redirect(flask.url_for("newMember")+'#'+result["course"].replace(" ","+"))
+    elif result["error"] == "No Calendar":
+      return flask.redirect(flask.url_for('newMember')+"#NoCalendar")
+    else:
+      return flask.redirect(flask.url_for('newMember')+"#BadInput")
+
+@app.route('/addClass/newMember', methods=["POST"])
+def addClassNewMember():
+  print "Adding Classes..."
+  data = flask.request.json
+  print "Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"])
+  print "Reminders: ",
+  for reminder in data["reminders"]:
+    print int(reminder),
+  print "\n"
+  # return "Fucker"
+
+  if 'credentials' not in flask.session:
+    print "Authorizing..."
+    return flask.redirect(flask.url_for('oauth2callbackNewMember'))
+  credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
+  if credentials.access_token_expired:
+    print "Credentials expired"
+    flask.session.pop("credentials",None)
+    return "Credentials expired"
+  else:
+    http_auth = credentials.authorize(httplib2.Http())
+    print "Adding Classes now"
+    return json.dumps( main.newMemberClasses(http_auth, data) )
+
 
 
 

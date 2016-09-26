@@ -280,6 +280,17 @@ def brotherClasses(http_auth, inputDict):
 		print "No Calendar Found"
 		return {"error":"No Calendar"}
 
+def newMemberClasses(http_auth, inputDict):
+	service = discovery.build('calendar', 'v3', http_auth)
+	calendar_list = service.calendarList().list().execute()
+	calID = 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com'
+	correctCal = any(item['id'] == calID for item in calendar_list['items'])
+	if correctCal:
+		return classes(http_auth, inputDict, calendarId = calID, preText = "%s - "%inputDict['name'])
+	else:
+		print "No Calendar Found"
+		return {"error":"No Calendar"}
+
 # if __name__ == '__main__':
 #     inputDict={"classInfo":[{"subNum":"190","courseNum":"206","sectionNum":"1"}],"school":"NB","reminders":[True,True,True,False]}
 #     inputJSON=json.dumps(inputDict)
