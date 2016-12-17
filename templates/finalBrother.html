@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{{{ url_for('static', filename='bower_components/webcomponentsjs/webcomponents-lite.min.js') }}}"></script>
+
+    <link rel="shortcut icon" href="{{{ url_for('static', filename='images/favicon.ico') }}}" />
+
+    <link href="{{{ url_for('static', filename='bower_components/paper-styles/paper-styles.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-fab/paper-fab.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-dropdown-menu/paper-dropdown-menu.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-listbox/paper-listbox.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-input/paper-input.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-item/paper-item.html') }}}" rel="import">
+
+    <link href="{{{ url_for('static', filename='bower_components/paper-checkbox/paper-checkbox.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-button/paper-button.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/iron-icons/iron-icons.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/iron-form/iron-form.html') }}}" rel="import">
+
+    <link href="{{{ url_for('static', filename='bower_components/paper-toast/paper-toast.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-spinner/paper-spinner.html') }}}" rel="import">
+
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="{{{ url_for('static', filename='bower_components/iron-media-query/iron-media-query.html') }}}" rel="import">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <title>RUScheduler</title>
+  </head>
+  <body class="fullbleed">
+	<template id="app" is="dom-bind">
+
+
+		<div id="Main" micro$="[[microView]]" mini$="[[miniView]]" small$="[[smallView]]" full$="[[not(smallView)]]">
+			<div id="Content">
+        		<div id="intro" class="fullscreen fit layout vertical center-center">
+        			<section id="header">
+        				<h1 id="title"><span class="Red">RU</span>Scheduler</h1>
+        				<h2 id="subtitle">Finals Meets Google Calendar</h2>
+        			</section>
+
+					<section id="class-selection">
+						<article id="name">
+							<h3>Name</h3>
+							<paper-input value="{{name}}" />
+						</article>
+
+						<article id="subject">
+							<h3>Subject</h3>
+							<paper-dropdown-menu disabled$="[[not(subjects)]]">
+								<paper-listbox class="dropdown-content">
+									<template is="dom-repeat" id="subject-list" items="{{subjects}}" as="subject">
+										<paper-item code="[[subject.code]]" on-tap="subjectSelection">{{subject.description}} ({{subject.code}})</paper-item>
+									</template>
+								</paper-listbox>
+							</paper-dropdown-menu>
+							<paper-spinner id="subLoad" active></paper-spinner>
+						</article>
+
+						<article id="course">
+							<h3>Course</h3>
+							<paper-dropdown-menu disabled$="[[not(courses)]]">
+								<paper-listbox class="dropdown-content">
+									<template is="dom-repeat" id="course-list" items="{{courses}}" as="course">
+										<paper-item code="[[course.courseNumber]]" name="[[course.title]]" on-tap="courseSelection">{{course.title}} ([[subjectSelected]]:{{course.courseNumber}})</paper-item>
+									</template>
+								</paper-listbox>
+							</paper-dropdown-menu>
+							<paper-spinner id="courseLoad" active$="[[courseLoad]]"></paper-spinner>
+						</article>
+
+						<article id="section">
+							<h3>Section</h3>
+							<paper-dropdown-menu disabled$="[[not(sections)]]">
+								<paper-listbox class="dropdown-content">
+									<template is="dom-repeat" id="section-list" items="{{sections}}" as="section">
+										<paper-item code="{{section.number}}" index="{{section.index}}" on-tap="sectionSelection">{{section.number}}</paper-item>
+									</template>
+								</paper-listbox>
+							</paper-dropdown-menu>
+							<paper-spinner id="sectionLoad"></paper-spinner>
+						</article>
+
+						<paper-fab icon="check" on-tap="submit" disabled$="[[not(submitable)]]" active$="[[submitable]]"></paper-fab>
+					</section>
+
+					<paper-toast id="added" text="Successfully Added: "><span class="Red">[[Class]]</span></paper-toast>
+					<paper-toast id="error" text="Error: "><span class="Red">Bad Input</span> No Times Found</paper-toast>
+					<paper-toast id="error" text="Error: "><span class="Red">Insufficient Privileges</span> No Brother Classes Calendar</paper-toast>
+
+        			<article hidden$="[[miniView]]" id ="credit">Created by <span class="Red"><a href="https://github.com/KiranJKurian/RUScheduler">Kiran Kurian</a></span></article>
+
+        		</div>
+			</div>
+		</div>
+
+		<iron-media-query query="(max-width:700px)" query-matches="{{smallView}}"></iron-media-query>
+		<iron-media-query query="(max-width: 475px)" query-matches="{{miniView}}"></iron-media-query>
+		<iron-media-query query="(max-width: 320px)" query-matches="{{microView}}"></iron-media-query>
+
+		<style is="custom-style">
+			#Main{ text-align: center; color: white; font-family: Raleway }
+
+			.Red{ color:#d32f2f }
+
+			#Main #Content #credit{
+				bottom:0;
+				left:0;
+				margin:1em;
+				position: fixed;
+			}
+
+			#Main #Content #credit a{
+				text-decoration: none;
+			}
+			#Main #Content #credit a:visited{
+				color:#d32f2f;
+			}
+
+			#Main #Content .fullscreen {
+				height: 100%;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				overflow: auto;
+			}
+
+			#Main #Content #intro{background-color:var(--paper-grey-800); padding:1em; }
+			#Main[mini] #Content #intro{ display: block }
+
+			#Main #Content #classPage{ background-color: blue }
+
+			#Main #Content #title { font-size: 5em; margin-bottom: 0; margin-top: 1em }
+			#Main #Content #subtitle { font-size: 1.75em; text-transform: capitalize; margin-top: 0 }
+			#Main[small] #Content #title { font-size: 4.5em }
+			#Main[mini] #Content #title { font-size: 3em }
+
+			#Main #Content #class-selection paper-input{
+				width: 75vw;
+				max-width: 30em;
+				text-align: left;
+				--paper-input-container-input: {
+					color: white;
+				}
+			}
+
+			#Main #Content #class-selection paper-dropdown-menu{
+				width: 75vw;
+				max-width: 30em;
+				--paper-input-container-input: {
+					color: white;
+				}
+			}
+			#Main #Content #class-selection paper-listbox{
+				--paper-listbox-background-color: var(--paper-grey-700);
+				--paper-listbox-color: white;
+				--paper-listbox: {
+					width: 85vw;
+					max-width: 30em;
+				};
+			}
+
+			#Main #Content #class-selection h3{ margin-bottom: 0; text-align: left; text-transform: uppercase; }
+			#Main #Content #class-selection paper-fab{ float:right; margin: .5em 0 .5em 0; }
+			#Main #Content #class-selection paper-fab[active]{ background-color: #d32f2f }
+
+		</style>
+	</template>
+
+	<script>
+		var app = document.querySelector("#app");
+
+	    app.ternary = function(a,b,c){return a?b:c};
+	    app.not = function(a){return !a};
+	    // app.exists = function(a){return !!a};
+
+	    app.name = "";
+	    app.subjects = false;
+	    app.courses = false;
+	    app.sections = false;
+	    app.courseLoads = false;
+
+	    app.submitable = false;
+
+	    app.Class = "Intro to Comp Sci"
+
+	    campus = "{{{ campus }}}";
+
+		app.subjectSelected = -1;
+		app.subjectIndex = -1;
+		app.courseSelected = 0;
+		app.courseName = "";
+		app.courseIndex = -1;
+
+		app.subjectSelection = function(e){
+			app.resetCourse();
+
+			app.subjectSelected = e["srcElement"].code;
+
+			app.courseLoad = true;
+
+			$.getJSON( "/subject/"+app.subjectSelected+"/"+campus, function( data ) {
+				app.courses = data;
+				app.courseLoad = false;
+			});
+		}
+		app.courseSelection = function(e){
+			app.resetSection();
+
+			app.courseSelected = Number(e["srcElement"].code);
+			app.courseName = e["srcElement"].name;
+
+			$.each(app.courses,function(i,v){
+				if(v.courseNumber == app.courseSelected){
+					app.Class = v.title;
+					sections = [];
+					$.each(app.courses[i].sections,function( _ ,section){
+						sections.push({ 'number': section.number, 'index': section.index });
+					});
+					app.sections = sections;
+				}
+			});
+		}
+		app.sectionSelected = -1;
+		app.sectionIndex = -1;
+		app.sectionSelection = function(e){ app.sectionSelected = e["srcElement"].code; app.sectionIndex = e["srcElement"].index; app.submitable = true; }
+
+		app.getSelected = function(){
+			// $("#subject paper-listbox paper-item")[app.selection]
+			if(!app.name || app.subjectSelected == -1 || app.courseSelected == -1 || app.sectionSelected == -1){ return undefined }
+
+			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, index: app.sectionIndex, courseName: app.courseName, campus: campus, name: app.name };
+
+		}
+
+		app.resetSection = function(){
+			$("#section paper-listbox")[0].selected = undefined;
+			app.sectionSelected = -1;
+			app.sectionIndex = -1;
+			app.sections = false;
+			app.submitable = false;
+		}
+
+		app.resetCourse = function(){
+			$("#course paper-listbox")[0].selected = undefined;
+			app.courseSelected = -1;
+			app.courseIndex = -1;
+			app.courses = false;
+
+			app.resetSection();
+		}
+
+		app.reset = function(){
+			$("#subject paper-listbox")[0].selected = undefined;
+			app.subjectSelected = -1;
+			app.subjectIndex = -1;
+
+			app.resetCourse();
+		}
+
+		app.loggedIn = function(){
+			$.get("/loggedIn", function(data){
+				console.log(data);
+				stuff = JSON.parse(data)
+			});
+		}
+
+
+
+		// jquery extend function
+		$.extend(
+		{
+		    redirectPost: function(location, args)
+		    {
+		        var form = '';
+		        $.each( args, function( key, value ) {
+		            form += '<input type="hidden" name="'+key+'" value="'+value+'">';
+		        });
+		        $('<form action="'+location+'" method="POST">'+form+'</form>').appendTo('body').submit();
+		    }
+		});
+
+
+		app.submit = function(){
+			app.submitable = false;
+
+			var selected = app.getSelected();
+
+			if( selected == undefined ){
+				alert("Didn't get proper input");
+				app.submitable = true;
+				return;
+			}
+
+			$.get("/loggedIn", function(data){
+				console.log(data);
+				data = JSON.parse(data)
+				if(data.loggedIn){
+					$.ajax({
+						type: "POST",
+						url: "/addFinal/brother",
+						data: JSON.stringify(selected),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						success: function(data){
+							console.log("Sent:")
+							console.log(JSON.stringify(selected))
+							console.log(selected)
+							console.log("Authorized:");
+							console.log(data);
+							if(data.error == "Bad Input"){
+								document.querySelectorAll('#error')[0].open();
+							}
+							if(data.error == "No Calendar"){
+								document.querySelectorAll('#error')[1].open();
+							}
+							else{
+								$("#added")[0].open();
+								app.reset()
+							}
+						}
+					});
+				}
+				else{
+					var redirect = '/authorize/final/brother';
+					$.redirectPost(redirect, selected);
+				}
+			});
+
+		}
+
+		window.addEventListener('WebComponentsReady', function(e) {
+
+
+			$.getJSON( "/subjects/"+campus, function( data ) {
+				app.subjects = data;
+				$("#subLoad")[0].active = false;
+			});
+
+			if(location.hash){
+				if(location.hash == "#BadInput"){ document.querySelectorAll('#error')[0].open() }
+				else if(location.hash == "#NoCalendar"){ document.querySelectorAll('#error')[1].open() }
+				else{
+					app.Class = location.hash.substring(1).split("+").join(" ")
+					$("#added")[0].open();
+				}
+				location.hash = "";
+			}
+
+		});
+
+	</script>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-73570601-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+
+  </body>
+</html>
