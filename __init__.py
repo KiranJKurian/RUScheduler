@@ -1,18 +1,12 @@
+from flask import Flask, render_template, jsonify, send_from_directory
+from oauth2client import client
+from initData import semester
 import json
 import urllib2
 import os
-
 import flask
-
-from flask import Flask, render_template, jsonify, send_from_directory
-
 import httplib2
-
-# from apiclient import discovery
-from oauth2client import client
-
 import datetime
-
 import main
 
 class CustomFlask(Flask):
@@ -72,7 +66,7 @@ def indexCM(hash):
 @app.route("/subject/<subject>/<campus>")
 def subjectJSON(subject,campus):
   try:
-    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=92016&subject=%s&campus=%s&level=UG"%(subject,campus)).read()
+    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
   except:
     return app.send_static_file('static/data/Courses/%s.json'%subject)
 
@@ -81,7 +75,7 @@ def subjectJSON(subject,campus):
 def subjectsJSON(campus):
   try:
     print "Getting subjects..."
-    return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=92016&campus=%s&level=U"%campus).read()
+    return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=%s&campus=%s&level=U"%(semester, campus)).read()
   except:
     return app.send_static_file('static/data/subjects.json')
 

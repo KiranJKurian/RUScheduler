@@ -1,7 +1,6 @@
 import json
 import urllib2
-
-semester=92016
+from initData import semester
 
 def isNum(s):
     try:
@@ -16,12 +15,12 @@ def courseInfo(subNum,courseNum,sectionNum,school):
         print "Subject or Course Number is NaN"
         return None
     try:
-        courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))    
+        courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))
     except:
-        courses=None   
+        courses=None
     # print courses
-    
-    
+
+
     if not courses:
         print "Couldn't find json"
         return None
@@ -36,7 +35,7 @@ def courseInfo(subNum,courseNum,sectionNum,school):
 
             for section in course['sections']:
                 if (section['number'])==(sectionNum) or (isNum(section['number']) and isNum(sectionNum) and int(section['number'])== int(sectionNum)):
-                    
+
                     # print "Found Section %s"%sectionNum
 
                     for meetingTimes in section['meetingTimes']:

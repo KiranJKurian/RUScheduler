@@ -1,11 +1,12 @@
 import json
-import urllib2 
+import urllib2
+from initData import semester
 
-url = urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=92016&campus=NB&level=U")
+url = urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=%s&campus=NB&level=U")%(semester)
 subjects = json.loads(url.read())
 
 for subject in subjects:
-	url = urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=92016&subject=%s&campus=NB&level=UG"%str(subject["code"]))
+	url = urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=NB&level=UG"%(semester, str(subject["code"])))
 	content = url.read()
 
 	with open('data/Courses/%s.json'%str(subject["code"]), 'w') as outfile:

@@ -13,8 +13,10 @@ from pymongo import MongoClient
 from dateutil.parser import *
 import datetime
 
+from initData import dbSemester, semesterInfo
+
 client = MongoClient(port=27017)
-db=client.fall16
+db = getattr(client, dbSemester)
 
 # Version 3.0
 def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
@@ -53,17 +55,17 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 	for meetingDay in cInfo['meetingDays']:
 		day="%s"%(meetingDay['day']).lower()
 		if day=="monday" or day=="m":
-			startDate="2016-09-12"
+			startDate=semesterInfo['startDates'][0]
 		elif day=="tuesday" or day=="t":
-			startDate="2016-09-06"
+			startDate=semesterInfo['startDates'][1]
 		elif day=="wednesday" or day=="w":
-			startDate="2016-09-07"
+			startDate=semesterInfo['startDates'][2]
 		elif day=="thursday" or day=="th":
-			startDate="2016-09-08"
+			startDate=semesterInfo['startDates'][3]
 		elif day=="friday" or day=="f":
-			startDate="2016-09-09"
+			startDate=semesterInfo['startDates'][4]
 		elif day=="saturday" or day=="s":
-			startDate="2016-09-10"
+			startDate=semesterInfo['startDates'][5]
 		else:
 			print "Invalid meetingDay"
 			return {"error":"Bad Input"}
@@ -95,7 +97,7 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 			 },
 			 "summary": summary,
 			 "recurrence": [
-			  'RRULE:FREQ=WEEKLY;UNTIL=20161215T000000Z',
+			  'RRULE:FREQ=WEEKLY;UNTIL=%sT000000Z'%(semesterInfo['endDate'].strftime('%Y%m%d')),
 			 ],
 			 "colorId": color,
 			 "reminders": {
@@ -116,14 +118,14 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 		eventID=recurring_event.get("id")
 		print "success"
 
-		instances = service.events().instances(calendarId=calendarId, eventId="%s"%eventID,timeMin=parse("2016-09-6").isoformat()+'Z',timeMax=parse("2016-12-15").isoformat()+'Z').execute()['items']
+		instances = service.events().instances(calendarId=calendarId, eventId="%s"%eventID,timeMin=semesterInfo['startDate'].isoformat()+'Z',timeMax=semesterInfo['endDate'].isoformat()+'Z').execute()['items']
 		for instance in instances:
 			if instance['start'].has_key("dateTime"):
-				instanceStart= parse(instance['start']['dateTime']).replace(tzinfo=None)
+				instanceStart = parse(instance['start']['dateTime']).replace(tzinfo=None)
 			else:
-				instanceStart= parse(instance['start']['date']).replace(tzinfo=None)
+				instanceStart = parse(instance['start']['date']).replace(tzinfo=None)
 			# Exclusion for Thanksgiving
-			if (instanceStart>=parse("2016-11-24") and instanceStart<=parse("2016-11-27")) or (instanceStart>=parse("2016-11-22") and instanceStart<=parse("2016-11-24")):
+			if (instanceStart >= semesterInfo['breakInfo']['start'] and instanceStart <= semesterInfo['breakInfo']['end']):
 				instance['status'] = 'cancelled'
 				service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
@@ -255,15 +257,17 @@ def classesOld(http_auth, inputJSON):
 		for meetingDay in cInfo['meetingDays']:
 			day="%s"%(meetingDay['day']).lower()
 			if day=="monday" or day=="m":
-				startDate="2016-09-12"
+				startDate=semesterInfo['startDates'][0]
 			elif day=="tuesday" or day=="t":
-				startDate="2016-09-06"
+				startDate=semesterInfo['startDates'][1]
 			elif day=="wednesday" or day=="w":
-				startDate="2016-09-07"
+				startDate=semesterInfo['startDates'][2]
 			elif day=="thursday" or day=="th":
-				startDate="2016-09-08"
+				startDate=semesterInfo['startDates'][3]
 			elif day=="friday" or day=="f":
-				startDate="2016-09-09"
+				startDate=semesterInfo['startDates'][4]
+			elif day=="saturday" or day=="s":
+				startDate=semesterInfo['startDates'][5]
 			else:
 				print "Invalid meetingDay"
 				return json.dumps({"error":"Bad Input"})
@@ -294,7 +298,7 @@ def classesOld(http_auth, inputJSON):
 			 },
 			 "summary": summary,
 			 "recurrence": [
-			  'RRULE:FREQ=WEEKLY;UNTIL=20161215T000000Z',
+			  'RRULE:FREQ=WEEKLY;UNTIL=%sT000000Z'%(semesterInfo['endDate'].strftime('%Y%m%d')),
 			 ],
 			 "colorId": color,
 			 "reminders": {
@@ -330,16 +334,16 @@ def classesOld(http_auth, inputJSON):
 			eventID=recurring_event.get("id")
 			print "success"
 
-			instances = service.events().instances(calendarId='primary', eventId="%s"%eventID,timeMin=parse("2016-09-6").isoformat()+'Z',timeMax=parse("2016-12-15").isoformat()+'Z').execute()['items']
+			instances = service.events().instances(calendarId=calendarId, eventId="%s"%eventID,timeMin=semesterInfo['startDate'].isoformat()+'Z',timeMax=semesterInfo['endDate'].isoformat()+'Z').execute()['items']
 			for instance in instances:
 				if instance['start'].has_key("dateTime"):
-					instanceStart= parse(instance['start']['dateTime']).replace(tzinfo=None)
+					instanceStart = parse(instance['start']['dateTime']).replace(tzinfo=None)
 				else:
-					instanceStart= parse(instance['start']['date']).replace(tzinfo=None)
-				# Exclusion for Spring Break
-				if (instanceStart>=parse("2016-11-24") and instanceStart<=parse("2016-11-27")) or (instanceStart>=parse("2016-11-22") and instanceStart<=parse("2016-11-24")):
+					instanceStart = parse(instance['start']['date']).replace(tzinfo=None)
+				# Exclusion for Thanksgiving
+				if (instanceStart >= semesterInfo['breakInfo']['start'] and instanceStart <= semesterInfo['breakInfo']['end']):
 					instance['status'] = 'cancelled'
-					service.events().update(calendarId='primary', eventId=instance['id'], body=instance).execute()
+					service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
 		returnDict["success"].append(summary)
 
