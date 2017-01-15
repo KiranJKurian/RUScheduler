@@ -66,9 +66,17 @@ def indexCM(hash):
 @app.route("/subject/<subject>/<campus>")
 def subjectJSON(subject,campus):
   try:
-    return urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
-  except:
-    return app.send_static_file('static/data/Courses/%s.json'%subject)
+    subJSON = urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
+    courses = json.load(subJSON)
+    if courses is None or len(filter(lambda course: course.has_key('sections') and len(course['sections']) > 0, courses)) > 0:
+      print "Using cached %s json"%subject
+      return send_from_directory('static/data/Courses','%s.json'%subject)
+    else:
+      return subJSON
+  except Exception,e:
+    print str(e)
+    print "Using cached %s json"%subject
+    return send_from_directory('static/data/Courses','%s.json'%subject)
 
 @app.route('/subjects', defaults={'campus': "NB"})
 @app.route('/subjects/<campus>')
@@ -77,7 +85,8 @@ def subjectsJSON(campus):
     print "Getting subjects..."
     return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=%s&campus=%s&level=U"%(semester, campus)).read()
   except:
-    return app.send_static_file('static/data/subjects.json')
+    print 'Using cached subjects'
+    return send_from_directory('static/data', 'subjects.json')
 
 @app.route('/authorize', methods=["POST"])
 def authorize():
