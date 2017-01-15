@@ -15,6 +15,25 @@ import datetime
 
 from initData import dbSemester, semesterInfo
 
+from multiprocessing import Pool
+
+def insertRecord(record):
+	try:
+		client = MongoClient(port=27017)
+		db = getattr(client, dbSemester)
+		db.scheduler.insert(record)
+		print "Added to DB"
+	except:
+		print "DB down"
+
+def insertRecordAsync(record):
+	try:
+		pool = Pool(1)
+		pool.apply_async(insertRecord, (record,))
+		pool.close()
+	except:
+		print "Multiprocessing error"
+
 # Version 3.0
 def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
 	service = discovery.build('calendar', 'v3', http_auth)
@@ -127,13 +146,7 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 				service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
 	# db.scheduler.remove()
-	try:
-		client = MongoClient(port=27017)
-		db = getattr(client, dbSemester)
-		db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
-		print "Added to DB"
-	except:
-		print "DB down"
+	insertRecordAsync({"name": name,"email": email,"success": summary, "error": None})
 	return {"success":True,"course": summary}
 
 # Final Exam
@@ -199,14 +212,7 @@ def final(http_auth, inputDict, calendarId = "primary", preText = "", postText =
 	service.events().insert(calendarId=calendarId, body=event).execute()
 	# print "success"
 
-	# db.scheduler.remove()
-	try:
-		client = MongoClient(port=27017)
-		db = getattr(client, dbSemester)
-		db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
-		print "Added to DB"
-	except:
-		print "DB down"
+	insertRecordAsync({"name": name,"email": email,"success": summary, "error": None})
 	return {"success":True,"course": summary}
 
 def finalBrother(http_auth, inputDict):
@@ -349,14 +355,9 @@ def classesOld(http_auth, inputJSON):
 		returnDict["success"].append(summary)
 
 	print returnDict
-	# db.scheduler.remove()
-	try:
-		client = MongoClient(port=27017)
-		db = getattr(client, dbSemester)
-		db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
-		print "Added to DB"
-	except:
-		print "DB down"
+
+	insertRecordAsync({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
+
 	return json.dumps(returnDict)
 
 def brotherClasses(http_auth, inputDict):
