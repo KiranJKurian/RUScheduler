@@ -15,9 +15,6 @@ import datetime
 
 from initData import dbSemester, semesterInfo
 
-client = MongoClient(port=27017)
-db = getattr(client, dbSemester)
-
 # Version 3.0
 def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
 	service = discovery.build('calendar', 'v3', http_auth)
@@ -131,6 +128,8 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 
 	# db.scheduler.remove()
 	try:
+		client = MongoClient(port=27017)
+		db = getattr(client, dbSemester)
 		db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
 		print "Added to DB"
 	except:
@@ -202,6 +201,8 @@ def final(http_auth, inputDict, calendarId = "primary", preText = "", postText =
 
 	# db.scheduler.remove()
 	try:
+		client = MongoClient(port=27017)
+		db = getattr(client, dbSemester)
 		db.scheduler.insert({"name": name,"email": email,"success": summary, "error": None})
 		print "Added to DB"
 	except:
@@ -350,6 +351,8 @@ def classesOld(http_auth, inputJSON):
 	print returnDict
 	# db.scheduler.remove()
 	try:
+		client = MongoClient(port=27017)
+		db = getattr(client, dbSemester)
 		db.scheduler.insert({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
 		print "Added to DB"
 	except:
