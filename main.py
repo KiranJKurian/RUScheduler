@@ -34,17 +34,42 @@ def insertRecordAsync(record):
 	except:
 		print "Multiprocessing error"
 
+def getUserInfo(http_auth):
+	service = discovery.build('plus', 'v1', http_auth)
+	people_resource = service.people()
+	people_document = people_resource.get(userId='me').execute()
+	return {'name': people_document['displayName'], 'email': people_document['emails'][0]['value']}
+
+def getMeetingStartDate(day):
+	day = day.lower()
+	if day=="monday" or day=="m":
+		return semesterInfo['startDates'][0]
+	elif day=="tuesday" or day=="t":
+		return semesterInfo['startDates'][1]
+	elif day=="wednesday" or day=="w":
+		return semesterInfo['startDates'][2]
+	elif day=="thursday" or day=="th":
+		return semesterInfo['startDates'][3]
+	elif day=="friday" or day=="f":
+		return semesterInfo['startDates'][4]
+	elif day=="saturday" or day=="s":
+		return semesterInfo['startDates'][5]
+
+def getMeetingColor(location):
+	if location == "Online":
+		return "11"
+	elif (location['campus']).upper()=="BUS":
+		return "7"
+	elif (location['campus']).upper()=="LIV":
+		return "5"
+	elif (location['campus']).upper()=="D/C":
+		return "10"
+	else:
+		return "11"
 # Version 3.0
 def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
 	service = discovery.build('calendar', 'v3', http_auth)
-	SERVICE = discovery.build('plus', 'v1', http_auth)
-
-	people_resource = SERVICE.people()
-	people_document = people_resource.get(userId='me').execute()
-
-	name =	people_document['displayName']
-	email = people_document['emails'][0]['value']
-
+	userInfo = getUserInfo(http_auth)
 	if "campus" in inputDict:
 		school = inputDict["campus"]
 	else:
@@ -59,7 +84,7 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 	except:
 		reminders = inputDict["reminders"]
 
-	cInfo=courseInfo(subject, course, section, school)
+	cInfo = courseInfo(subject, course, section, school)
 	print cInfo
 
 	if cInfo is None:
@@ -69,37 +94,15 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 	summary = "%s%s%s" % (preText, cInfo["title"], postText)
 
 	for meetingDay in cInfo['meetingDays']:
-		day="%s"%(meetingDay['day']).lower()
-		if day=="monday" or day=="m":
-			startDate=semesterInfo['startDates'][0]
-		elif day=="tuesday" or day=="t":
-			startDate=semesterInfo['startDates'][1]
-		elif day=="wednesday" or day=="w":
-			startDate=semesterInfo['startDates'][2]
-		elif day=="thursday" or day=="th":
-			startDate=semesterInfo['startDates'][3]
-		elif day=="friday" or day=="f":
-			startDate=semesterInfo['startDates'][4]
-		elif day=="saturday" or day=="s":
-			startDate=semesterInfo['startDates'][5]
-		else:
-			print "Invalid meetingDay"
+		startDate = getMeetingStartDate(meetingDay['day'])
+		if startDate is None:
 			return {"error":"Bad Input"}
 
-		startTime="%s%s"%(meetingDay['startTime'],":00")
-		endTime="%s%s"%(meetingDay['endTime'],":00")
-		location="%s Room %s"%(meetingDay['location']['building'],meetingDay['location']['room'])
+		startTime = "%s%s"%(meetingDay['startTime'], ":00")
+		endTime = "%s%s"%(meetingDay['endTime'], ":00")
+		location = "%s Room %s"%(meetingDay['location']['building'],meetingDay['location']['room'])
 
-		if meetingDay["location"]=="Online":
-			color="11"
-		elif (meetingDay["location"]['campus']).upper()=="BUS":
-		  color="7"
-		elif (meetingDay["location"]['campus']).upper()=="LIV":
-		  color="5"
-		elif (meetingDay["location"]['campus']).upper()=="D/C":
-		  color="10"
-		else:
-		  color="11"
+		color = getMeetingColor(meetingDay["location"])
 
 		event = {
 			"location": "%s"%(location),
@@ -146,19 +149,14 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 				service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
 	# db.scheduler.remove()
-	insertRecordAsync({"name": name,"email": email,"success": summary, "error": None})
+	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'], "success": summary, "error": None})
 	return {"success":True,"course": summary}
 
 # Final Exam
 def final(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
 	service = discovery.build('calendar', 'v3', http_auth)
-	SERVICE = discovery.build('plus', 'v1', http_auth)
 
-	people_resource = SERVICE.people()
-	people_document = people_resource.get(userId='me').execute()
-
-	name =	people_document['displayName']
-	email = people_document['emails'][0]['value']
+	userInfo = getUserInfo(http_auth)
 
 	if "campus" in inputDict:
 		school = inputDict["campus"]
@@ -179,11 +177,6 @@ def final(http_auth, inputDict, calendarId = "primary", preText = "", postText =
 		return { "error": "Bad Input" }
 
 	summary = "%s%s%s" % (preText, courseName, postText)
-	print "Summary Info:"
-	print preText
-	print courseName
-	print postText
-	print summary
 
 	startTime = finalInfo['startTime'].isoformat()
 	endTime = finalInfo['endTime'].isoformat()
@@ -212,7 +205,7 @@ def final(http_auth, inputDict, calendarId = "primary", preText = "", postText =
 	service.events().insert(calendarId=calendarId, body=event).execute()
 	# print "success"
 
-	insertRecordAsync({"name": name,"email": email,"success": summary, "error": None})
+	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'],"success": summary, "error": None})
 	return {"success":True,"course": summary}
 
 def finalBrother(http_auth, inputDict):
