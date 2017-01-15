@@ -76,7 +76,7 @@ def subjectJSON(subject,campus):
       return subJSON
   except Exception,e:
     print str(e)
-    print "Using cached %s json"%subject
+    print "Got an error. Using cached %s json"%subject
     return send_from_directory('static/data/Courses','%s.json'%subject)
 
 @app.route('/subjects', defaults={'campus': "NB"})
