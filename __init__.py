@@ -68,7 +68,7 @@ def subjectJSON(subject,campus):
   try:
     print 'Getting subject %s...'%subject
     subJSON = urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
-    courses = json.load(subJSON)
+    courses = json.loads(subJSON)
     if courses is None or len(filter(lambda course: course.has_key('sections') and len(course['sections']) > 0, courses)) == 0:
       print "Using cached %s json"%subject
       return send_from_directory(app.static_folder,'data/Courses/%s.json'%subject)
