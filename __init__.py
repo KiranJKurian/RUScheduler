@@ -16,7 +16,7 @@ class CustomFlask(Flask):
     variable_end_string='}}}',
   ))
 
-app = CustomFlask(__name__, static_url_path='')
+app = CustomFlask(__name__, static_url_path='', static_folder='static')
 
 development = os.uname()[1] != "ruscheduler"
 
@@ -71,7 +71,7 @@ def subjectJSON(subject,campus):
     courses = json.load(subJSON)
     if courses is None or len(filter(lambda course: course.has_key('sections') and len(course['sections']) > 0, courses)) == 0:
       print "Using cached %s json"%subject
-      return send_from_directory('static/data/Courses','%s.json'%subject)
+      return send_from_directory(app.static_folder,'data/Courses/%s.json'%subject)
     else:
       return subJSON
   except Exception,e:
@@ -82,7 +82,7 @@ def subjectJSON(subject,campus):
     except:
       print "Another read error"
     print "Using cached %s json"%subject
-    return send_from_directory('static/data/Courses','%s.json'%subject)
+    return send_from_directory(app.static_folder,'data/Courses/%s.json'%subject)
 
 @app.route('/subjects', defaults={'campus': "NB"})
 @app.route('/subjects/<campus>')
@@ -92,7 +92,7 @@ def subjectsJSON(campus):
     return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=%s&campus=%s&level=U"%(semester, campus)).read()
   except:
     print 'Using cached subjects'
-    return send_from_directory('static/data', 'subjects.json')
+    return send_from_directory(app.static_folder, 'subjects.json')
 
 @app.route('/authorize', methods=["POST"])
 def authorize():
