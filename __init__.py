@@ -76,7 +76,8 @@ def subjectJSON(subject,campus):
       return subJSON
   except Exception,e:
     print str(e)
-    print "Got an error. Using cached %s json"%subject
+    print "Result of urlopen: %s"%urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus))
+    print "Using cached %s json"%subject
     return send_from_directory('static/data/Courses','%s.json'%subject)
 
 @app.route('/subjects', defaults={'campus': "NB"})
