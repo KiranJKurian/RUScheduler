@@ -8,6 +8,7 @@ import flask
 import httplib2
 import datetime
 import main
+import logging
 
 class CustomFlask(Flask):
   jinja_options = Flask.jinja_options.copy()
@@ -33,7 +34,7 @@ def indexNB(hash):
     try:
         return render_template('index.html',campus="NB")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route('/NK', defaults={'hash': ""})
@@ -44,7 +45,7 @@ def indexNK(hash):
     try:
         return render_template('index.html',campus="NK")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route('/CM', defaults={'hash': ""})
@@ -55,46 +56,45 @@ def indexCM(hash):
     try:
         return render_template('index.html',campus="CM")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route("/subject/<subject>", defaults={'campus': "NB"})
 @app.route("/subject/<subject>/<campus>")
 def subjectJSON(subject,campus):
   try:
-    print 'Getting subject %s...'%subject
+    logging.debug('Getting subject %s...'%subject)
     subJSON = urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
     courses = json.loads(subJSON)
     if courses is None or len(filter(lambda course: course.has_key('sections') and len(course['sections']) > 0, courses)) == 0:
-      print "Using cached %s json"%subject
+      logging.debug("Using cached %s json"%subject)
       return send_from_directory(app.static_folder,'data/Courses/%s.json'%subject)
     else:
       return subJSON
   except Exception,e:
-    print str(e)
-    print "Result of urlopen: %s"%urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus))
-    print "http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)
+    logging.debug(str(e))
+    logging.debug("Result of urlopen: %s"%urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)))
+    logging.debug("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus))
     try:
-      print urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read()
+      logging.debug(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=UG"%(semester, subject,campus)).read())
     except:
-      print "Another read error"
-    print "Using cached %s json"%subject
+      logging.debug("Another read error")
+    logging.debug("Using cached %s json"%subject)
     return send_from_directory(app.static_folder,'data/Courses/%s.json'%subject)
 
 @app.route('/subjects', defaults={'campus': "NB"})
 @app.route('/subjects/<campus>')
 def subjectsJSON(campus):
   try:
-    print "Getting subjects..."
+    logging.debug("Getting subjects...")
     return urllib2.urlopen("https://sis.rutgers.edu/soc/subjects.json?semester=%s&campus=%s&level=U"%(semester, campus)).read()
   except:
-    print 'Using cached subjects'
+    logging.debug('Using cached subjects')
     return send_from_directory(app.static_folder, 'subjects.json')
 
 @app.route('/authorize', methods=["POST"])
 def authorize():
-  # print flask.request.form
-  # return "Fucker"
+  # logging.debug(flask.request.form)
   postInfo = {"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
   try:
     flask.session["initData"] = postInfo
@@ -104,10 +104,10 @@ def authorize():
     if credentials.access_token_expired:
       return flask.redirect(flask.url_for('oauth2callback'))
     else:
-      print "Credentials located"
+      logging.debug("Credentials located")
       return flask.redirect(flask.url_for('index'+postInfo['campus']))
   except Exception,e:
-    print str(e)
+    logging.debug(str(e))
     return json.dumps({"success":False})
 
 @app.route('/oauth2callback', methods=["GET"])
@@ -139,26 +139,21 @@ def oauth2callback():
 
 @app.route('/addClass', methods=["POST"])
 def addClass():
-  print "Adding Classes..."
+  logging.debug("Adding Classes...")
   data = flask.request.json
-  print "Subject: %s\nCourse: %s\nSection: %s"%(int(data["subject"]),int(data["course"]),data["section"])
-  print "Reminders: ",
-  for reminder in data["reminders"]:
-    print int(reminder),
-  print "\n"
-  # return "Fucker"
+  logging.debug("Subject: %s\nCourse: %s\nSection: %s"%(int(data["subject"]),int(data["course"]),data["section"]))
 
   if 'credentials' not in flask.session:
-    print "Authorizing..."
+    logging.debug("Authorizing...")
     return flask.redirect(flask.url_for('oauth2callback'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
-    print "Credentials expired"
+    logging.debug("Credentials expired")
     flask.session.pop("credentials",None)
     return "Credentials expired"
   else:
     http_auth = credentials.authorize(httplib2.Http())
-    print "Adding Classes now"
+    logging.debug("Adding Classes now")
     return json.dumps( main.classes(http_auth, data) )
 
 @app.route('/loggedIn', methods=["GET"])
@@ -179,7 +174,7 @@ def old():
     try:
         return render_template('old.html')
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route('/faq')
@@ -189,7 +184,7 @@ def faq():
     try:
         return render_template('faq.html')
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route('/loggedIn/old')
@@ -208,7 +203,7 @@ def donate():
     try:
         return render_template('donate.html')
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 
 @app.route('/authorize/old', methods=["POST"])
@@ -216,20 +211,20 @@ def authorizeOld():
   try:
     if 'credentials' not in flask.session:
       postInfo=flask.request.json
-      print postInfo
+      logging.debug(postInfo)
       flask.session['name']=postInfo['id']
       return flask.redirect(flask.url_for('oauth2callbackOld'))
     credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
     if credentials.access_token_expired:
       postInfo=flask.request.json
-      print postInfo
+      logging.debug(postInfo)
       flask.session['name']=postInfo['id']
       return flask.redirect(flask.url_for('oauth2callbackOld'))
     else:
-      print "Credentials located"
+      logging.debug("Credentials located")
       return json.dumps({"success":True, "url":None})
   except Exception,e:
-    print str(e)
+    logging.debug(str(e))
     return json.dumps({"success":False})
 
 @app.route('/magic', methods=["POST"])
@@ -270,11 +265,11 @@ def brother(hash):
     try:
         return render_template('brother.html',campus="NB")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 @app.route('/authorize/brother', methods=["POST"])
 def authorizeBrother():
-  # print flask.request.form
+  # logging.debug(flask.request.form)
   # return "Fucker"
   postInfo = {"name":flask.request.form["name"],"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
   try:
@@ -285,10 +280,10 @@ def authorizeBrother():
     if credentials.access_token_expired:
       return flask.redirect(flask.url_for('oauth2callbackBrother'))
     else:
-      print "Credentials located"
+      logging.debug("Credentials located")
       return flask.redirect(flask.url_for('brother'))
   except Exception,e:
-    print str(e)
+    logging.debug(str(e))
     return json.dumps({"success":False})
 @app.route('/oauth2callback/brother', methods=["GET"])
 def oauth2callbackBrother():
@@ -319,26 +314,23 @@ def oauth2callbackBrother():
 
 @app.route('/addClass/brother', methods=["POST"])
 def addClassBrother():
-  print "Adding Classes..."
+  logging.debug("Adding Classes...")
   data = flask.request.json
-  print "Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"])
-  print "Reminders: ",
-  for reminder in data["reminders"]:
-    print int(reminder),
-  print "\n"
+  logging.debug("Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"]))
+  logging.debug("\n")
   # return "Fucker"
 
   if 'credentials' not in flask.session:
-    print "Authorizing..."
+    logging.debug("Authorizing...")
     return flask.redirect(flask.url_for('oauth2callbackBrother'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
-    print "Credentials expired"
+    logging.debug("Credentials expired")
     flask.session.pop("credentials",None)
     return "Credentials expired"
   else:
     http_auth = credentials.authorize(httplib2.Http())
-    print "Adding Classes now"
+    logging.debug("Adding Classes now")
     return json.dumps( main.brotherClasses(http_auth, data) )
 
 # Brothers Finals
@@ -350,11 +342,11 @@ def finalBrother(hash):
     try:
         return render_template('finalBrother.html',campus="NB")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 @app.route('/authorize/final/brother', methods=["POST"])
 def authorizeFinalBrother():
-  # print flask.request.form
+  # logging.debug(flask.request.form)
   # return "Fucker"
   postInfo = {"name":flask.request.form["name"],"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"index":flask.request.form["index"],"campus":flask.request.form["campus"], "courseName":flask.request.form["courseName"]}
   try:
@@ -365,10 +357,10 @@ def authorizeFinalBrother():
     if credentials.access_token_expired:
       return flask.redirect(flask.url_for('oauth2callbackFinalBrother'))
     else:
-      print "Credentials located"
+      logging.debug("Credentials located")
       return flask.redirect(flask.url_for('finalBrother'))
   except Exception,e:
-    print str(e)
+    logging.debug(str(e))
     return json.dumps({"success":False})
 @app.route('/oauth2callback/final/brother', methods=["GET"])
 def oauth2callbackFinalBrother():
@@ -399,20 +391,20 @@ def oauth2callbackFinalBrother():
 
 @app.route('/addFinal/brother', methods=["POST"])
 def addFinalBrother():
-  print "Adding Finales..."
+  logging.debug("Adding Finales...")
   data = flask.request.json
 
   if 'credentials' not in flask.session:
-    print "Authorizing..."
+    logging.debug("Authorizing...")
     return flask.redirect(flask.url_for('oauth2callbackFinalBrother'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
-    print "Credentials expired"
+    logging.debug("Credentials expired")
     flask.session.pop("credentials",None)
     return "Credentials expired"
   else:
     http_auth = credentials.authorize(httplib2.Http())
-    print "Adding Final now"
+    logging.debug("Adding Final now")
     return json.dumps( main.finalBrother(http_auth, data) )
 
 # New Member
@@ -424,11 +416,11 @@ def newMember(hash):
     try:
         return render_template('newMember.html',campus="NB")
     except:
-        print "Cannot render template"
+        logging.debug("Cannot render template")
         return "Error with rendering template"
 @app.route('/authorize/newMember', methods=["POST"])
 def authorizeNewMember():
-  # print flask.request.form
+  # logging.debug(flask.request.form)
   # return "Fucker"
   postInfo = {"name":flask.request.form["name"],"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
   try:
@@ -439,10 +431,10 @@ def authorizeNewMember():
     if credentials.access_token_expired:
       return flask.redirect(flask.url_for('oauth2callbackNewMember'))
     else:
-      print "Credentials located"
+      logging.debug("Credentials located")
       return flask.redirect(flask.url_for('newMember'))
   except Exception,e:
-    print str(e)
+    logging.debug(str(e))
     return json.dumps({"success":False})
 @app.route('/oauth2callback/newMember', methods=["GET"])
 def oauth2callbackNewMember():
@@ -473,26 +465,21 @@ def oauth2callbackNewMember():
 
 @app.route('/addClass/newMember', methods=["POST"])
 def addClassNewMember():
-  print "Adding Classes..."
+  logging.debug("Adding Classes...")
   data = flask.request.json
-  print "Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"])
-  print "Reminders: ",
-  for reminder in data["reminders"]:
-    print int(reminder),
-  print "\n"
-  # return "Fucker"
+  logging.debug("Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"]))
 
   if 'credentials' not in flask.session:
-    print "Authorizing..."
+    logging.debug("Authorizing...")
     return flask.redirect(flask.url_for('oauth2callbackNewMember'))
   credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
   if credentials.access_token_expired:
-    print "Credentials expired"
+    logging.debug("Credentials expired")
     flask.session.pop("credentials",None)
     return "Credentials expired"
   else:
     http_auth = credentials.authorize(httplib2.Http())
-    print "Adding Classes now"
+    logging.debug("Adding Classes now")
     return json.dumps( main.newMemberClasses(http_auth, data) )
 
 
