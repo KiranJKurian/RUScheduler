@@ -2,12 +2,7 @@ import json
 import os
 # import urllib2
 
-development = os.uname()[1] != "ruscheduler"
-
-if development:
-  BUILDING='Buildings.json'
-else:
-  BUILDING='/var/www/RUScheduler/RUScheduler/Buildings.json'
+BUILDING='Buildings.json'
 
 def location(code):
 	# url="https://raw.githubusercontent.com/jennpeare/cs_capstone/master/data/buildings.json"
