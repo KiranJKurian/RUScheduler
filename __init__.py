@@ -20,11 +20,7 @@ app = CustomFlask(__name__, static_url_path='', static_folder='static')
 
 development = os.uname()[1] != "ruscheduler"
 
-if development:
-  CLIENT_SECRETS='client_secrets.json'
-else:
-  CLIENT_SECRETS='/var/www/RUScheduler/client_secrets.json'
-
+CLIENT_SECRETS='client_secrets.json'
 
 # Version 3.0
 @app.route('/', defaults={'hash': ""})
