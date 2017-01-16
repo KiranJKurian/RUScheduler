@@ -10,6 +10,7 @@ import datetime
 import main
 import sys
 import logging
+import uuid
 
 class CustomFlask(Flask):
   jinja_options = Flask.jinja_options.copy()
@@ -22,6 +23,8 @@ app = CustomFlask(__name__, static_url_path='', static_folder='static')
 
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
+
+app.secret_key = str(uuid.uuid4())
 
 development = os.uname()[1] != "ruscheduler"
 
@@ -499,7 +502,5 @@ def not_found(error):
     return render_template('error.html',errorMessage="Congratulations, you hacked into the fourth dimension! Jk, but seriously, you're not supposed to be here"),404
 
 if __name__ == '__main__':
-  import uuid
-  app.secret_key = str(uuid.uuid4())
   app.debug = development
   app.run(host='0.0.0.0')
