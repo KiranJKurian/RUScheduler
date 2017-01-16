@@ -43,3 +43,7 @@ Thumbs.db
 
 # Cached files
 static/data/*
+
+# Logs
+error.log
+access.log
