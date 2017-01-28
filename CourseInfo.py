@@ -9,6 +9,10 @@ def isNum(s):
     except ValueError:
         return False
 
+def getCachedSubjects(subject):
+    with open('static/data/Courses/%s.json'%str(subject)) as cachedSubject:
+        return json.load(cachedSubject)
+
 def courseInfo(subNum,courseNum,sectionNum,school):
     from Places import location
     if not (isNum(subNum) and isNum(courseNum)):
@@ -16,8 +20,11 @@ def courseInfo(subNum,courseNum,sectionNum,school):
         return None
     try:
         courses = json.load(urllib2.urlopen("http://sis.rutgers.edu/soc/courses.json?semester=%s&subject=%s&campus=%s&level=U%%2CG"%(semester,subNum,school)))
+        if courses is None or len(filter(lambda course: course.has_key('sections') and len(course['sections']) > 0, courses)) == 0:
+          print "Using cached %s json"%subNum
+          courses = getCachedSubjects(subNum)
     except:
-        courses=None
+        courses = getCachedSubjects(subNum)
     # print courses
 
 

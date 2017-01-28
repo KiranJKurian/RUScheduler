@@ -125,7 +125,6 @@ def oauth2callback():
       redirect_uri=flask.url_for('oauth2callback', _external=True))
   if 'code' not in flask.request.args:
     auth_uri = flow.step1_get_authorize_url()
-    # webbrowser.open_new_tab(auth_uri)
     return flask.redirect(auth_uri)
   else:
     auth_code = flask.request.args.get('code')
@@ -133,6 +132,7 @@ def oauth2callback():
     flask.session['credentials'] = credentials.to_json()
 
     http_auth = credentials.authorize(httplib2.Http())
+    app.logger.debug(flask.session["initData"])
     result = main.classes(http_auth, flask.session["initData"])
 
     campus = flask.session["initData"]["campus"][::]
@@ -310,7 +310,7 @@ def oauth2callbackBrother():
     http_auth = credentials.authorize(httplib2.Http())
     result = main.brotherClasses(http_auth, flask.session["initData"])
 
-    flask.session.pop("initData",None)
+    # flask.session.pop("initData",None)
 
     if "success" in result:
       return flask.redirect(flask.url_for("brother")+'#'+result["course"].replace(" ","+"))
@@ -387,7 +387,7 @@ def oauth2callbackFinalBrother():
     http_auth = credentials.authorize(httplib2.Http())
     result = main.finalBrother(http_auth, flask.session["initData"])
 
-    flask.session.pop("initData",None)
+    # flask.session.pop("initData",None)
 
     if "success" in result:
       return flask.redirect(flask.url_for("finalBrother")+'#'+result["course"].replace(" ","+"))
