@@ -24,7 +24,11 @@ app = CustomFlask(__name__, static_url_path='', static_folder='static')
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 
-app.secret_key = str(uuid.uuid4())
+try:
+  with open('client_secrets.json') as client_secrets:
+    app.secret_key = json.load(client_secrets)['web']['client_secret']
+except Exception,e:
+  app.secret_key = str(uuid.uuid4())
 
 development = os.uname()[1] != "ruscheduler"
 
@@ -36,35 +40,35 @@ CLIENT_SECRETS='client_secrets.json'
 @app.route('/NB', defaults={'hash': ""})
 @app.route('/NB/<hash>')
 def indexNB(hash):
-    # flask.session.clear()
-    # raise Exception('Testing')
-    try:
-        return render_template('index.html',campus="NB")
-    except:
-        app.logger.debug("Cannot render template")
-        return "Error with rendering template"
+  # flask.session.clear()
+  # raise Exception('Testing')
+  try:
+      return render_template('index.html',campus="NB")
+  except:
+      app.logger.debug("Cannot render template")
+      return "Error with rendering template"
 
 @app.route('/NK', defaults={'hash': ""})
 @app.route('/NK/<hash>')
 def indexNK(hash):
-    # flask.session.clear()
-    # raise Exception('Testing')
-    try:
-        return render_template('index.html',campus="NK")
-    except:
-        app.logger.debug("Cannot render template")
-        return "Error with rendering template"
+  # flask.session.clear()
+  # raise Exception('Testing')
+  try:
+      return render_template('index.html',campus="NK")
+  except:
+      app.logger.debug("Cannot render template")
+      return "Error with rendering template"
 
 @app.route('/CM', defaults={'hash': ""})
 @app.route('/CM/<hash>')
 def indexCM(hash):
-    # flask.session.clear()
-    # raise Exception('Testing')
-    try:
-        return render_template('index.html',campus="CM")
-    except:
-        app.logger.debug("Cannot render template")
-        return "Error with rendering template"
+  # flask.session.clear()
+  # raise Exception('Testing')
+  try:
+      return render_template('index.html',campus="CM")
+  except:
+      app.logger.debug("Cannot render template")
+      return "Error with rendering template"
 
 @app.route("/subject/<subject>", defaults={'campus': "NB"})
 @app.route("/subject/<subject>/<campus>")
