@@ -345,7 +345,7 @@ def addClassBrother():
     http_auth = credentials.authorize(httplib2.Http())
     app.logger.debug("Adding Classes now")
     result = main.brotherClasses(http_auth, data)
-    if 'error' in result && result["error"] == "No Calendar":
+    if 'error' in result and result["error"] == "No Calendar":
       app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)
     return json.dumps(result)
@@ -502,7 +502,7 @@ def addClassGroup():
     http_auth = credentials.authorize(httplib2.Http())
     app.logger.debug("Adding Classes now")
     result = main.groupClasses(http_auth, data, 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com')
-    if 'error' in result && result["error"] == "No Calendar":
+    if 'error' in result and result["error"] == "No Calendar":
       app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)
     return json.dumps(result)
