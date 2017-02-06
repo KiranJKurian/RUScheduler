@@ -319,6 +319,7 @@ def oauth2callbackBrother():
     if "success" in result:
       return flask.redirect(flask.url_for("brother")+'#'+result["course"].replace(" ","+"))
     elif result["error"] == "No Calendar":
+      app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)
       return flask.redirect(flask.url_for('brother')+"#NoCalendar")
     else:
@@ -343,7 +344,11 @@ def addClassBrother():
   else:
     http_auth = credentials.authorize(httplib2.Http())
     app.logger.debug("Adding Classes now")
-    return json.dumps( main.brotherClasses(http_auth, data) )
+    result = main.brotherClasses(http_auth, data)
+    if 'error' in result && result["error"] == "No Calendar":
+      app.logger.debug("Credentials invalidated")
+      flask.session.pop("credentials", None)
+    return json.dumps(result)
 
 # Brothers Finals
 @app.route('/final/brother', defaults={'hash': ""})
@@ -397,6 +402,7 @@ def oauth2callbackFinalBrother():
     if "success" in result:
       return flask.redirect(flask.url_for("finalBrother")+'#'+result["course"].replace(" ","+"))
     elif result["error"] == "No Calendar":
+      app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)
       return flask.redirect(flask.url_for('finalBrother')+"#NoCalendar")
     else:
@@ -472,6 +478,7 @@ def oauth2callbackGroup():
     if "success" in result:
       return flask.redirect(flask.url_for("group")+'#'+result["course"].replace(" ","+"))
     elif result["error"] == "No Calendar":
+      app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)
       return flask.redirect(flask.url_for('group')+"#NoCalendar")
     else:
@@ -494,7 +501,11 @@ def addClassGroup():
   else:
     http_auth = credentials.authorize(httplib2.Http())
     app.logger.debug("Adding Classes now")
-    return json.dumps( main.groupClasses(http_auth, data, 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com') )
+    result = main.groupClasses(http_auth, data, 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com')
+    if 'error' in result && result["error"] == "No Calendar":
+      app.logger.debug("Credentials invalidated")
+      flask.session.pop("credentials", None)
+    return json.dumps(result)
 
 
 
