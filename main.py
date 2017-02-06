@@ -354,11 +354,12 @@ def classesOld(http_auth, inputJSON):
 	return json.dumps(returnDict)
 
 def brotherClasses(http_auth, inputDict):
+	calID = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com'
 	service = discovery.build('calendar', 'v3', http_auth)
 	calendar_list = service.calendarList().list().execute()
-	correctCal = any(item['id'] == '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com' for item in calendar_list['items'])
+	correctCal = any(item['id'] == calID for item in calendar_list['items'])
 	if correctCal:
-		return classes(http_auth, inputDict, calendarId = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com', preText = "%s - "%inputDict['name'])
+		return classes(http_auth, inputDict, calendarId = calID, preText = "%s - "%inputDict['name'])
 	else:
 		print "No Calendar Found"
 		return {"error":"No Calendar"}
