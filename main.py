@@ -143,7 +143,7 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 				instanceStart = parse(instance['start']['dateTime']).replace(tzinfo=None)
 			else:
 				instanceStart = parse(instance['start']['date']).replace(tzinfo=None)
-			# Exclusion for Thanksgiving
+			# Exclusion for Thanksgiving/Spring Break
 			if (instanceStart >= semesterInfo['breakInfo']['start'] and instanceStart <= semesterInfo['breakInfo']['end']):
 				instance['status'] = 'cancelled'
 				service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()

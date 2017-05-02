@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 # Initial Variables
-semester = 12017
-startDateDay = 17
-semesterInfo = { 'endDate': datetime(2017, 5, 2), 'breakInfo': { 'start': datetime(2017, 3, 11), 'end': datetime(2017, 3, 19)} }
+semester = 92017
+startDateDay = 5
+semesterInfo = { 'endDate': datetime(2017, 12, 14), 'breakInfo': { 'start': datetime(2017, 11, 23), 'end': datetime(2017, 11, 26)} }
 
 # Computations
 spring = False
