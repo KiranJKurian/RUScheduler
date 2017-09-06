@@ -11,12 +11,12 @@
     <link href="{{{ url_for('static', filename='bower_components/paper-dropdown-menu/paper-dropdown-menu.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-listbox/paper-listbox.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-item/paper-item.html') }}}" rel="import">
-    
+
     <link href="{{{ url_for('static', filename='bower_components/paper-checkbox/paper-checkbox.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-button/paper-button.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/iron-icons/iron-icons.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/iron-form/iron-form.html') }}}" rel="import">
-    
+
     <link href="{{{ url_for('static', filename='bower_components/paper-toast/paper-toast.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-spinner/paper-spinner.html') }}}" rel="import">
 
@@ -27,9 +27,9 @@
 
     <title>RUScheduler</title>
   </head>
-  <body class="fullbleed">  
+  <body class="fullbleed">
 	<template id="app" is="dom-bind">
-		
+
 
 		<div id="Main" micro$="[[microView]]" mini$="[[miniView]]" small$="[[smallView]]" full$="[[not(smallView)]]">
 			<div id="Content">
@@ -57,7 +57,7 @@
 							<paper-dropdown-menu disabled$="[[not(courses)]]">
 								<paper-listbox class="dropdown-content">
 									<template is="dom-repeat" id="course-list" items="{{courses}}" as="course">
-										<paper-item code="[[course.courseNumber]]" on-tap="courseSelection">{{course.title}} ([[subjectSelected]]:{{course.courseNumber}})</paper-item>
+										<paper-item code="[[course.courseNumber]]" unitcode="[[course.offeringUnitCode]]" on-tap="courseSelection">{{course.title}} ({{course.offeringUnitCode}}:[[subjectSelected]]:{{course.courseNumber}})</paper-item>
 									</template>
 								</paper-listbox>
 							</paper-dropdown-menu>
@@ -91,20 +91,20 @@
 
 					<paper-toast id="added" text="Successfully Added: "><span class="Red">[[Class]]</span></paper-toast>
 					<paper-toast id="error" text="Error: "><span class="Red">Bad Input</span> No Times Found</paper-toast>
-        			
+
         			<article hidden$="[[miniView]]" id ="credit">Created by <span class="Red"><a href="https://github.com/KiranJKurian/RUScheduler">Kiran Kurian</a></span></article>
 
         		</div>
 			</div>
 		</div>
-		
+
 		<iron-media-query query="(max-width:700px)" query-matches="{{smallView}}"></iron-media-query>
 		<iron-media-query query="(max-width: 475px)" query-matches="{{miniView}}"></iron-media-query>
 		<iron-media-query query="(max-width: 320px)" query-matches="{{microView}}"></iron-media-query>
 
 		<style is="custom-style">
 			#Main{ text-align: center; color: white; font-family: Raleway }
-			
+
 			.Red{ color:#d32f2f }
 
 			#Main #Content #credit{
@@ -213,9 +213,10 @@
 			app.resetSection();
 
 			app.courseSelected = Number(e["srcElement"].code);
-			
+			app.courseSelectedUnitCode = e["srcElement"].unitcode;
+
 			$.each(app.courses,function(i,v){
-				if(v.courseNumber == app.courseSelected){
+				if(v.courseNumber == app.courseSelected && v.offeringUnitCode == app.courseSelectedUnitCode){
 					app.Class = v.title;
 					sections = [];
 					$.each(app.courses[i].sections,function( _ ,section){
@@ -231,7 +232,7 @@
 		app.getSelected = function(){
 			// $("#subject paper-listbox paper-item")[app.selection]
 			if(app.subjectSelected == -1 || app.courseSelected == -1 || app.sectionSelected == -1){ return undefined }
-			
+
 			reminders = [];
 
 			$.each($("#reminders #checkboxes paper-checkbox"), function( _ , checkbox){
@@ -240,7 +241,7 @@
 			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: reminders, campus: campus};
 
 		}
-		
+
 		app.resetSection = function(){
 			$("#section paper-listbox")[0].selected = undefined;
 			app.sectionSelected = -1;;
@@ -290,7 +291,7 @@
 
 		app.submit = function(){
 			app.submitable = false;
-			
+
 			var selected = app.getSelected();
 
 			if( selected == undefined ){
@@ -348,7 +349,7 @@
 				}
 				location.hash = "";
 			}
-			
+
 		});
 
 	</script>
