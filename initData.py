@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 semester = 92017
 startDateDay = 5
 semesterInfo = { 'endDate': datetime(2017, 12, 14), 'breakInfo': { 'start': datetime(2017, 11, 23), 'end': datetime(2017, 11, 26)} }
+brotherCalendar = 'trmd06d138ujsdrdvn41dgmk8o@group.calendar.google.com'
+newMemberCalendar = 'lpth4igpesa9urlaoajp3kkuto@group.calendar.google.com'
 
 # Computations
 spring = False

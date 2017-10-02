@@ -130,8 +130,8 @@
 				overflow: auto;
 			}
 
-			#Main #Content #intro{background-color:var(--paper-grey-800); padding:1em; }
-			#Main[mini] #Content #intro{ display: block }
+			#Main #Content #intro{ background-color: var(--paper-grey-800); padding:1em; display: block; }
+			#Main #Content #intro section { margin:auto; max-width: 30em; }
 
 			#Main #Content #classPage{ background-color: blue }
 
@@ -140,14 +140,15 @@
 			#Main[small] #Content #title { font-size: 4.5em }
 			#Main[mini] #Content #title { font-size: 3em }
 
-			#Main #Content #class-selection paper-dropdown-menu{
+			#Main #Content paper-dropdown-menu{
 				width: 75vw;
 				max-width: 30em;
 				--paper-input-container-input: {
 					color: white;
 				}
+				--paper-input-container-focus-color: #d32f2f;
 			}
-			#Main #Content #class-selection paper-listbox{
+			#Main #Content paper-listbox{
 				--paper-listbox-background-color: var(--paper-grey-700);
 				--paper-listbox-color: white;
 				--paper-listbox: {
@@ -156,7 +157,7 @@
 				};
 			}
 
-			#Main #Content #class-selection h3{ margin-bottom: 0; text-align: left; text-transform: uppercase; }
+			#Main #Content h3{ margin-bottom: 0; text-align: left; text-transform: uppercase; }
 			#Main #Content #class-selection paper-fab{ float:right; margin: .5em 0 .5em 0; }
 			#Main #Content #class-selection paper-fab[active]{ background-color: #d32f2f }
 
@@ -167,7 +168,7 @@
 				--paper-checkbox-unchecked-ink-color: white;
 				--paper-checkbox-label-color: white;
 				--paper-checkbox-vertical-align: top;
-				margin: 1em;
+				margin: 0.75em;
 			}
 
 

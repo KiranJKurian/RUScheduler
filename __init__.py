@@ -171,10 +171,14 @@ def addClass():
 def loggedIn():
   if 'credentials' not in flask.session:
     return json.dumps({"loggedIn":False})
-  elif client.OAuth2Credentials.from_json(flask.session['credentials']).access_token_expired:
+  credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
+  if credentials.access_token_expired:
     return json.dumps({"loggedIn":False})
   else:
-    return json.dumps({"loggedIn":True})
+    http_auth = credentials.authorize(httplib2.Http())
+    calendars = main.getEditCalendars(http_auth)
+    userInfo = main.getUserInfo(http_auth)
+    return json.dumps({"loggedIn": True, "calendars": calendars, "userInfo": userInfo})
 
 
 #Version 2.0 - Depreciated
@@ -433,17 +437,14 @@ def group(hash):
     # flask.session.clear()
     # raise Exception('Testing')
     try:
-        return render_template('group.html',campus="NB")
+        return render_template('group.html', campus="NB")
     except:
         app.logger.debug("Cannot render template")
         return "Error with rendering template"
 @app.route('/authorize/group', methods=["POST"])
 def authorizeGroup():
-  # app.logger.debug(flask.request.form)
-  # return "Fucker"
-  postInfo = {"name":flask.request.form["name"],"subject":flask.request.form["subject"],"course":flask.request.form["course"],"section":flask.request.form["section"],"reminders":flask.request.form["reminders"],"campus":flask.request.form["campus"]}
+  app.logger.debug(flask.request.form)
   try:
-    flask.session["initData"] = postInfo
     if 'credentials' not in flask.session:
       return flask.redirect(flask.url_for('oauth2callbackGroup'))
     credentials = client.OAuth2Credentials.from_json(flask.session['credentials'])
@@ -454,7 +455,8 @@ def authorizeGroup():
       return flask.redirect(flask.url_for('group'))
   except Exception,e:
     app.logger.debug(str(e))
-    return json.dumps({"success":False})
+    return json.dumps({"success": False})
+
 @app.route('/oauth2callback/group', methods=["GET"])
 def oauth2callbackGroup():
   flow = client.flow_from_clientsecrets(
@@ -463,7 +465,6 @@ def oauth2callbackGroup():
       redirect_uri=flask.url_for('oauth2callbackGroup', _external=True))
   if 'code' not in flask.request.args:
     auth_uri = flow.step1_get_authorize_url()
-    # webbrowser.open_new_tab(auth_uri)
     return flask.redirect(auth_uri)
   else:
     auth_code = flask.request.args.get('code')
@@ -471,24 +472,13 @@ def oauth2callbackGroup():
     flask.session['credentials'] = credentials.to_json()
 
     http_auth = credentials.authorize(httplib2.Http())
-    result = main.groupClasses(http_auth, flask.session["initData"], 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com')
-
-    flask.session.pop("initData",None)
-
-    if "success" in result:
-      return flask.redirect(flask.url_for("group")+'#'+result["course"].replace(" ","+"))
-    elif result["error"] == "No Calendar":
-      app.logger.debug("Credentials invalidated")
-      flask.session.pop("credentials", None)
-      return flask.redirect(flask.url_for('group')+"#NoCalendar")
-    else:
-      return flask.redirect(flask.url_for('group')+"#BadInput")
+    return flask.redirect(flask.url_for('group'))
 
 @app.route('/addClass/group', methods=["POST"])
 def addClassGroup():
   app.logger.debug("Adding Classes...")
   data = flask.request.json
-  app.logger.debug("Subject: %s\nCourse: %s\nSection: %s\Name: %s"%(int(data["subject"]),int(data["course"]),data["section"],data["name"]))
+  app.logger.debug("Calendar: %s\nSubject: %s\nCourse: %s\nSection: %s\Name: %s"%(data["calendar"], int(data["subject"]),int(data["course"]),data["section"],data["name"]))
 
   if 'credentials' not in flask.session:
     app.logger.debug("Authorizing...")
@@ -501,7 +491,7 @@ def addClassGroup():
   else:
     http_auth = credentials.authorize(httplib2.Http())
     app.logger.debug("Adding Classes now")
-    result = main.groupClasses(http_auth, data, 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com')
+    result = main.groupClasses(http_auth, data, data["calendar"])
     if 'error' in result and result["error"] == "No Calendar":
       app.logger.debug("Credentials invalidated")
       flask.session.pop("credentials", None)

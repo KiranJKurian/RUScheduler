@@ -13,7 +13,7 @@ from pymongo import MongoClient
 from dateutil.parser import *
 import datetime
 
-from initData import dbSemester, semesterInfo
+from initData import dbSemester, semesterInfo, brotherCalendar, newMemberCalendar
 
 from multiprocessing import Pool
 
@@ -152,71 +152,96 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'], "success": summary, "error": None})
 	return {"success":True,"course": summary}
 
-# Final Exam
-def final(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
-	service = discovery.build('calendar', 'v3', http_auth)
-
-	userInfo = getUserInfo(http_auth)
-
-	if "campus" in inputDict:
-		school = inputDict["campus"]
-	else:
-		school = "NB"
-
-	subject = inputDict["subject"]
-	course = inputDict["course"]
-	section = inputDict["section"]
-	index = inputDict["index"]
-	courseName = inputDict["courseName"]
-
-	finalInfo = getFinalDate(index, school)
-	# print finalInfo
-
-	if finalInfo is None:
-		print "Error: Semester/Subject/School/Course/Section/Index not found or Invalid/Empty/Non-existant startTime/endTime"
-		return { "error": "Bad Input" }
-
-	summary = "%s%s%s" % (preText, courseName, postText)
-
-	startTime = finalInfo['startTime'].isoformat()
-	endTime = finalInfo['endTime'].isoformat()
-
-	event = {
-		"location": "Check class announcements",
-		 "end": {
-			 "dateTime": endTime,
-			"timeZone": "America/New_York"
-		 },
-		 "start": {
-			 "dateTime": startTime,
-			"timeZone": "America/New_York"
-		 },
-		 "summary": summary,
-		 "colorId": "11",
-		 "reminders": {
-		  "useDefault":"false",
-		  "overrides": [],
-		},
-		"description":"Added final with RUScheduler! %s:%s:%s"%(subject,course,section)
-	}
-
-	# print "Created the event"
-
-	service.events().insert(calendarId=calendarId, body=event).execute()
-	# print "success"
-
-	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'],"success": summary, "error": None})
-	return {"success":True,"course": summary}
-
-def finalBrother(http_auth, inputDict):
+# Group Classes
+def getEditCalendars(http_auth):
 	service = discovery.build('calendar', 'v3', http_auth)
 	calendar_list = service.calendarList().list().execute()
-	correctCal = any(item['id'] == '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com' for item in calendar_list['items'])
+	calendars = []
+	for calendar in calendar_list['items']:
+		if calendar['accessRole'] != 'reader':
+			calendars.append({'id': calendar['id'], 'summary': calendar['summary']})
+	return calendars
+
+def groupClasses(http_auth, inputDict, calID = 'primary'):
+	service = discovery.build('calendar', 'v3', http_auth)
+	calendar_list = service.calendarList().list().execute()
+	correctCal = any(item['id'] == calID for item in calendar_list['items'])
 	if correctCal:
-		return final(http_auth, inputDict, calendarId = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com', preText = "%s - "%inputDict['name'], postText = " FINAL")
+		return classes(http_auth, inputDict, calendarId = calID, preText = "%s - "%inputDict['name'])
 	else:
 		print "No Calendar Found"
 		return {"error":"No Calendar"}
+
+def brotherClasses(http_auth, inputDict):
+	groupClasses(http_auth, inputDict, brotherCalendar)
+def newMemberClasses(http_auth, inputDict):
+	groupClasses(http_auth, inputDict, newMemberCalendar)
+
+# # Final Exam
+# def final(http_auth, inputDict, calendarId = "primary", preText = "", postText = ""):
+# 	service = discovery.build('calendar', 'v3', http_auth)
+
+# 	userInfo = getUserInfo(http_auth)
+
+# 	if "campus" in inputDict:
+# 		school = inputDict["campus"]
+# 	else:
+# 		school = "NB"
+
+# 	subject = inputDict["subject"]
+# 	course = inputDict["course"]
+# 	section = inputDict["section"]
+# 	index = inputDict["index"]
+# 	courseName = inputDict["courseName"]
+
+# 	finalInfo = getFinalDate(index, school)
+# 	# print finalInfo
+
+# 	if finalInfo is None:
+# 		print "Error: Semester/Subject/School/Course/Section/Index not found or Invalid/Empty/Non-existant startTime/endTime"
+# 		return { "error": "Bad Input" }
+
+# 	summary = "%s%s%s" % (preText, courseName, postText)
+
+# 	startTime = finalInfo['startTime'].isoformat()
+# 	endTime = finalInfo['endTime'].isoformat()
+
+# 	event = {
+# 		"location": "Check class announcements",
+# 		 "end": {
+# 			 "dateTime": endTime,
+# 			"timeZone": "America/New_York"
+# 		 },
+# 		 "start": {
+# 			 "dateTime": startTime,
+# 			"timeZone": "America/New_York"
+# 		 },
+# 		 "summary": summary,
+# 		 "colorId": "11",
+# 		 "reminders": {
+# 		  "useDefault":"false",
+# 		  "overrides": [],
+# 		},
+# 		"description":"Added final with RUScheduler! %s:%s:%s"%(subject,course,section)
+# 	}
+
+# 	# print "Created the event"
+
+# 	service.events().insert(calendarId=calendarId, body=event).execute()
+# 	# print "success"
+
+# 	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'],"success": summary, "error": None})
+# 	return {"success":True,"course": summary}
+
+# def finalBrother(http_auth, inputDict):
+# 	service = discovery.build('calendar', 'v3', http_auth)
+# 	calendar_list = service.calendarList().list().execute()
+# 	correctCal = any(item['id'] == '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com' for item in calendar_list['items'])
+# 	if correctCal:
+# 		return final(http_auth, inputDict, calendarId = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com', preText = "%s - "%inputDict['name'], postText = " FINAL")
+# 	else:
+# 		print "No Calendar Found"
+# 		return {"error":"No Calendar"}
 
 #Version 2.0 - Depreciated
 def classesOld(http_auth, inputJSON):
@@ -352,28 +377,6 @@ def classesOld(http_auth, inputJSON):
 	insertRecordAsync({"name":returnDict['name'],"email":returnDict['email'],"success":returnDict['success'],"error":returnDict["error"]})
 
 	return json.dumps(returnDict)
-
-def brotherClasses(http_auth, inputDict):
-	calID = '5bcor9o45kfok59ja0bn8r2g00@group.calendar.google.com'
-	service = discovery.build('calendar', 'v3', http_auth)
-	calendar_list = service.calendarList().list().execute()
-	correctCal = any(item['id'] == calID for item in calendar_list['items'])
-	if correctCal:
-		return classes(http_auth, inputDict, calendarId = calID, preText = "%s - "%inputDict['name'])
-	else:
-		print "No Calendar Found"
-		return {"error":"No Calendar"}
-
-def newMemberClasses(http_auth, inputDict):
-	service = discovery.build('calendar', 'v3', http_auth)
-	calendar_list = service.calendarList().list().execute()
-	calID = 'dusm1q4hp6mo91m5d1216bkue4@group.calendar.google.com'
-	correctCal = any(item['id'] == calID for item in calendar_list['items'])
-	if correctCal:
-		return classes(http_auth, inputDict, calendarId = calID, preText = "%s - "%inputDict['name'])
-	else:
-		print "No Calendar Found"
-		return {"error":"No Calendar"}
 
 # if __name__ == '__main__':
 #     inputDict={"classInfo":[{"subNum":"190","courseNum":"206","sectionNum":"1"}],"school":"NB","reminders":[True,True,True,False]}
