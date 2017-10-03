@@ -46,6 +46,11 @@
         				<h1 id="title"><span class="Red">RU</span>Scheduler</h1>
         				<h2 id="subtitle">Class Meets Google Calendar</h2>
         			</section>
+        			<template is="dom-if" if="[[not(pageReady)]]">
+	        			<section>
+	        				<paper-spinner id="pageLoad" active$="[[not(pageReady)]]"></
+	        			</section>
+	        		</template>
         			<neon-animated-pages hidden="[[not(pageReady)]]" id="pages" selected="{{pageNumber}}">
         				<!-- <section>
 		        			<paper-button raised>Login with Google</paper-button>
