@@ -59,9 +59,8 @@
 							<section id="login">
 								<article>
 									<h2>Welcome to Group Scheduling!</h2>
-									<p>Click the login button below to get started</p>
 								</article>
-								<paper-fab icon="social:person" on-tap="logIn"></paper-fab>
+								<paper-button raised on-tap="logIn">Login</paper-button>
 							</section>
 						</neon-animatable>
 
@@ -156,6 +155,7 @@
 
 			#Main #Content #credit a{
 				text-decoration: none;
+				color:#d32f2f;
 			}
 			#Main #Content #credit a:visited{
 				color:#d32f2f;
@@ -195,6 +195,10 @@
 					width: 85vw;
 					max-width: 30em;
 				};
+			}
+
+			#Main #Content paper-button{
+				background: #d32f2f;
 			}
 
 			#Main #Content h3{ margin-bottom: 0; text-align: left; text-transform: uppercase; }
