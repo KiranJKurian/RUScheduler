@@ -3,7 +3,7 @@ from oauth2client import client
 from initData import semester
 import json
 import urllib2
-import os
+import platform
 import flask
 import httplib2
 import datetime
@@ -30,7 +30,7 @@ try:
 except Exception,e:
   app.secret_key = str(uuid.uuid4())
 
-development = os.uname()[1] != "ruscheduler"
+development = platform.uname()[1] != "ruscheduler"
 
 CLIENT_SECRETS='client_secrets.json'
 
