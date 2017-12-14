@@ -43,7 +43,7 @@ def indexNB(hash):
   # flask.session.clear()
   # raise Exception('Testing')
   try:
-      return render_template('index.html',campus="NB")
+      return render_template('index.html',campus="NB",semester='Spring' if str(semester)[0] else 'Fall',year=str(semester)[1:])
   except:
       app.logger.debug("Cannot render template")
       return "Error with rendering template"
@@ -54,7 +54,7 @@ def indexNK(hash):
   # flask.session.clear()
   # raise Exception('Testing')
   try:
-      return render_template('index.html',campus="NK")
+      return render_template('index.html',campus="NK",semester='Spring' if str(semester)[0] else 'Fall',year=str(semester)[1:])
   except:
       app.logger.debug("Cannot render template")
       return "Error with rendering template"
@@ -65,7 +65,7 @@ def indexCM(hash):
   # flask.session.clear()
   # raise Exception('Testing')
   try:
-      return render_template('index.html',campus="CM")
+      return render_template('index.html',campus="CM",semester='Spring' if str(semester)[0] else 'Fall',year=str(semester)[1:])
   except:
       app.logger.debug("Cannot render template")
       return "Error with rendering template"

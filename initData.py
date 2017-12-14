@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 # Initial Variables
-semester = 92017
-startDateDay = 5
-semesterInfo = { 'endDate': datetime(2017, 12, 14), 'breakInfo': { 'start': datetime(2017, 11, 23), 'end': datetime(2017, 11, 26)} }
+semester = 12018
+startDateDay = 16
+semesterInfo = { 'endDate': datetime(2018, 4, 30), 'breakInfo': { 'start': datetime(2018, 3, 10), 'end': datetime(2018, 3, 18)} }
 brotherCalendar = 'trmd06d138ujsdrdvn41dgmk8o@group.calendar.google.com'
 newMemberCalendar = 'lpth4igpesa9urlaoajp3kkuto@group.calendar.google.com'
 
