@@ -82,8 +82,14 @@
 									<div style="float: right">
 										<iron-icon class="info" id="calendar_info" icon="info-outline"></iron-icon>
 										<paper-tooltip for="calendar_info" position="top" animation-delay="0">
-											<h2>Don't see your calendar?</h2>
-											<p>Make sure you have edit access to the calendar. Ask the calendar owner for permissions if you don't</p>
+											<div id="left">
+												<h2>Don't have a calendar?</h2>
+												<p>You can create a calendar at <a href="https://calendar.google.com/">Google Calendar</a>! Make sure to share it with your friends with edit access!</p>
+											</div>
+											<div>
+												<h2>Don't see your calendar?</h2>
+												<p>Make sure you have edit access to the calendar. Ask the calendar owner for permissions if you don't</p>
+											</div>
 										</paper-tooltip>
 									</div>
 									<paper-dropdown-menu>
@@ -158,6 +164,9 @@
 			.Red{ color:#d32f2f }
 
 			.info{ opacity: 0.75; margin-top: 18.72px; }
+
+			paper-tooltip { width: 200px; }
+			paper-tooltip a { color: white; }
 
 			#Main #Content #class-selection article { width: 75vw; max-width: 30em; }
 
