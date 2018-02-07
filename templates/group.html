@@ -95,7 +95,7 @@
 									<paper-dropdown-menu>
 										<paper-listbox class="dropdown-content">
 											<template is="dom-repeat" id="calendar-list" items="{{calendars}}" as="calendar">
-												<paper-item code="[[calendar.id]]" on-tap="calendarSelection">{{calendar.summary}}</paper-item>
+												<paper-item code="[[calendar.id]]" summary="[[calendar.summary]]" on-tap="calendarSelection">{{calendar.summary}}</paper-item>
 											</template>
 										</paper-listbox>
 									</paper-dropdown-menu>
@@ -283,18 +283,21 @@
 		app.courseIndex = 0;
 
 		app.calendars = [];
+		app.summary = false;
 		app.calendar = false;
 		app.submitting = false;
 
 		submitableCheck = function() {
-			return !!(app.name && app.calendar && app.subjectSelected && app.courseSelected && app.sectionSelected && !app.submitting);
+			return !!(app.name && app.calendar && app.summary && app.subjectSelected && app.courseSelected && app.sectionSelected && !app.submitting);
 		}
 
 		app.submitable = submitableCheck();
 
 		app.calendarSelection = function(e){
 			calendarSelected = e["srcElement"].code;
+			summary = e["srcElement"].summary;
 			app.calendar = calendarSelected;
+			app.summary = summary;
 		}
 		app.subjectSelection = function(e){
 			app.resetCourse();
@@ -334,7 +337,7 @@
 			// $("#subject paper-listbox paper-item")[app.selection]
 			if(!submitableCheck()){ return undefined }
 
-			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: [], campus: campus, name: app.name, calendar: app.calendar };
+			return { subject: app.subjectSelected, course: app.courseSelected, section: app.sectionSelected, reminders: [], campus: campus, name: app.name, calendar: app.calendar, summary: app.summary };
 
 		}
 

@@ -149,7 +149,7 @@ def classes(http_auth, inputDict, calendarId = "primary", preText = "", postText
 				service.events().update(calendarId=calendarId, eventId=instance['id'], body=instance).execute()
 
 	# db.scheduler.remove()
-	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'], "success": summary, "error": None, "calendarId": calendarId})
+	insertRecordAsync({"name": userInfo['name'],"email": userInfo['email'], "success": summary, "error": None, "calendarId": calendarId, "calendarSummary": inputDict['summary'] if inputDict.has_key('summary') else 'primary'})
 	return {"success":True,"course": summary}
 
 # Group Classes
