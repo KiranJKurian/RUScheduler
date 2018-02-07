@@ -20,6 +20,7 @@
     <link href="{{{ url_for('static', filename='bower_components/iron-form/iron-form.html') }}}" rel="import">
 
     <link href="{{{ url_for('static', filename='bower_components/paper-toast/paper-toast.html') }}}" rel="import">
+    <link href="{{{ url_for('static', filename='bower_components/paper-tooltip/paper-tooltip.html') }}}" rel="import">
     <link href="{{{ url_for('static', filename='bower_components/paper-spinner/paper-spinner.html') }}}" rel="import">
 
     <link href="{{{ url_for('static', filename='bower_components/neon-animation/neon-animated-pages.html') }}}" rel="import">
@@ -75,7 +76,16 @@
 								</article>
 
 								<article id="calendar-selection">
-									<h3>Calendar</h3>
+									<div style="float: left">
+										<h3>Calendar</h3>
+									</div>
+									<div style="float: right">
+										<iron-icon class="info" id="calendar_info" icon="info-outline"></iron-icon>
+										<paper-tooltip for="calendar_info" position="top" animation-delay="0">
+											<h2>Don't see your calendar?</h2>
+											<p>Make sure you have edit access to the calendar. Ask the calendar owner for permissions if you don't</p>
+										</paper-tooltip>
+									</div>
 									<paper-dropdown-menu>
 										<paper-listbox class="dropdown-content">
 											<template is="dom-repeat" id="calendar-list" items="{{calendars}}" as="calendar">
@@ -83,6 +93,7 @@
 											</template>
 										</paper-listbox>
 									</paper-dropdown-menu>
+									<paper-spinner id="pageReadyLoader" active$="[[equals(pageNumber, 0)]]"></paper-spinner>
 								</article>
 
 								<article id="subject">
@@ -145,6 +156,10 @@
 			#Main{ text-align: center; color: white; font-family: Raleway }
 
 			.Red{ color:#d32f2f }
+
+			.info{ opacity: 0.75; margin-top: 18.72px; }
+
+			#Main #Content #class-selection article { width: 75vw; max-width: 30em; }
 
 			#Main #Content #credit{
 				bottom:0;
@@ -239,6 +254,7 @@
 	    app.ternary = function(a,b,c){return a?b:c};
 	    app.not = function(a){return !a};
 	    app.notBoth = function(a, b){return !a || !b};
+	    app.equals = function(a, b){return a === b};
 	    // app.exists = function(a){return !!a};
 
 	    app.name = "";
